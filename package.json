@@ -1,0 +1,38 @@
+{
+  "name": "tap-essay",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@mdx-js/react": "^3.1.1",
+    "@paypal/paypal-js": "^9.6.0",
+    "@paypal/react-paypal-js": "^9.1.1",
+    "@supabase/supabase-js": "^2.103.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "framer-motion": "^12.38.0",
+    "gray-matter": "^4.0.3",
+    "next": "^16.2.3",
+    "next-mdx-remote": "^6.0.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "stripe": "^22.0.1",
+    "tone": "^15.1.22",
+    "zustand": "^5.0.12"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.2",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.3",
+    "postcss": "^8",
+    "tailwindcss": "^4.2.2",
+    "typescript": "^6.0.2"
+  }
+}
