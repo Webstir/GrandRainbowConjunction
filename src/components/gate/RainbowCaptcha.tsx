@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import {
@@ -28,7 +29,13 @@ type GalleryRow = {
   created_at: string;
 };
 
-export function RainbowCaptcha() {
+type RainbowCaptchaVariant = "gate" | "gallery";
+
+export function RainbowCaptcha({
+  variant = "gate",
+}: {
+  variant?: RainbowCaptchaVariant;
+}) {
   const router = useRouter();
   const setGateCleared = useEssayStore((s) => s.setGateCleared);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -39,7 +46,9 @@ export function RainbowCaptcha() {
   const [attempts, setAttempts] = useState(0);
   const [msg, setMsg] = useState<string | null>(null);
   const [passing, setPassing] = useState(false);
-  const [phase, setPhase] = useState<Phase>("draw");
+  const [phase, setPhase] = useState<Phase>(() =>
+    variant === "gallery" ? "browse" : "draw"
+  );
   const [mySnapshot, setMySnapshot] = useState<MySnapshot | null>(null);
   const [signAsNamed, setSignAsNamed] = useState(false);
   const [signerName, setSignerName] = useState("");
@@ -228,8 +237,19 @@ export function RainbowCaptcha() {
   };
 
   const finishAndEnter = () => {
-    setGateCleared(true);
+    if (variant === "gate") {
+      setGateCleared(true);
+    }
     router.push("/chapters/01-intro");
+  };
+
+  const backToGalleryWall = () => {
+    setMsg(null);
+    setPassing(false);
+    strokesRef.current = [];
+    currentRef.current = [];
+    setMySnapshot(null);
+    setPhase("browse");
   };
 
   return (
@@ -240,7 +260,9 @@ export function RainbowCaptcha() {
         className="mb-6 max-w-md text-center"
       >
         <h1 className="font-display text-3xl sm:text-4xl">
-          {"\u{1F308}\u{2728} The Grand Rainbow Conjunction"}
+          {variant === "gallery"
+            ? "\u{1F308} Travelers\u{2019} rainbow wall"
+            : "\u{1F308}\u{2728} The Grand Rainbow Conjunction"}
         </h1>
         <p className="mt-2 text-white/70">
           {phase === "browse" ? (
@@ -253,6 +275,11 @@ export function RainbowCaptcha() {
               Beautiful. Share it on the public wall (signed or anonymous),
               or skip — you&apos;ll still see everyone else&apos;s before you
               go on.
+            </>
+          ) : variant === "gallery" ? (
+            <>
+              Add a stroke to the wall: draw a small{"\u{1F308}"}. Curves
+              welcome — same energy as the entrance.
             </>
           ) : (
             <>
@@ -332,6 +359,15 @@ export function RainbowCaptcha() {
                   Clear
                 </button>
               </div>
+              {variant === "gallery" && (
+                <button
+                  type="button"
+                  onClick={backToGalleryWall}
+                  className="mt-4 text-sm text-white/50 underline decoration-white/30 underline-offset-4 hover:text-white/80"
+                >
+                  ← Back to gallery
+                </button>
+              )}
             </>
           )}
 
@@ -441,14 +477,35 @@ export function RainbowCaptcha() {
               ))}
             </ul>
           )}
-          <div className="mt-8 flex justify-center">
-            <button
-              type="button"
-              onClick={finishAndEnter}
-              className="rounded-full bg-white px-8 py-2.5 font-medium text-violet-950"
-            >
-              Continue to the essay →
-            </button>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap">
+            {variant === "gallery" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPostError(null);
+                    setPhase("draw");
+                  }}
+                  className="rounded-full border border-white/30 px-8 py-2.5 text-sm font-medium text-white hover:bg-white/10"
+                >
+                  Draw a rainbow
+                </button>
+                <Link
+                  href="/chapters/01-intro"
+                  className="inline-flex rounded-full bg-white px-8 py-2.5 font-medium text-violet-950 hover:opacity-95"
+                >
+                  Back to reading →
+                </Link>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={finishAndEnter}
+                className="rounded-full bg-white px-8 py-2.5 font-medium text-violet-950"
+              >
+                Continue to the essay →
+              </button>
+            )}
           </div>
         </motion.div>
       )}
@@ -466,7 +523,7 @@ export function RainbowCaptcha() {
         )}
       </AnimatePresence>
 
-      {phase === "draw" && attempts >= 3 && (
+      {variant === "gate" && phase === "draw" && attempts >= 3 && (
         <button
           type="button"
           onClick={() => {

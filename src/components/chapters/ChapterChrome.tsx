@@ -28,8 +28,11 @@ export function ChapterChrome({
             {title}
           </span>
           <nav className="flex flex-wrap gap-3 text-(--chapter-muted-fg)">
-            <Link href="/synth" className="hover:text-(--chapter-accent)">
-              Synth
+            <Link
+              href="/rainbow-gallery"
+              className="hover:text-(--chapter-accent)"
+            >
+              Rainbow wall
             </Link>
             <Link href="/tip" className="hover:text-(--chapter-accent)">
               Tip
