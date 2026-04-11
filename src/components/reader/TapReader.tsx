@@ -137,16 +137,12 @@ export function TapReader({ chapterId, sectionElements }: Props) {
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         role="application"
-        aria-label="Tap or press space to advance sections"
+        aria-label="Tap or press space to advance"
       >
-        <AnimatePresence mode="popLayout">
-          {sectionElements.map((el, i) =>
-            i <= activeIndex ? (
-              <Section key={i} index={i} activeIndex={activeIndex}>
-                {el}
-              </Section>
-            ) : null
-          )}
+        <AnimatePresence mode="wait">
+          <Section key={activeIndex} index={activeIndex} activeIndex={activeIndex}>
+            {sectionElements[activeIndex]}
+          </Section>
         </AnimatePresence>
         <motion.p
           className="mx-auto mt-8 max-w-160 px-4 text-center text-sm text-(--chapter-muted-fg)"
