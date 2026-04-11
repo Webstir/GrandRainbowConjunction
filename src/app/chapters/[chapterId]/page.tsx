@@ -41,7 +41,11 @@ export default async function ChapterPage(props: Props) {
   return (
     <ChapterTheme theme={frontmatter.theme as string | undefined}>
       <ChapterChrome chapterId={params.chapterId} title={title}>
-        <TapReader chapterId={contentId} sectionElements={nodes} />
+        <TapReader
+          chapterId={contentId}
+          trunkChapterId={params.chapterId}
+          sectionElements={nodes}
+        />
       </ChapterChrome>
     </ChapterTheme>
   );

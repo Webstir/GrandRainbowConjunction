@@ -9,18 +9,27 @@ import {
   type PointerEvent,
   type ReactElement,
 } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Section } from "./Section";
 import { ProgressBar } from "./ProgressBar";
 import { TapReaderProvider } from "./TapReaderContext";
 import { useEssayStore } from "@/lib/store";
+import { chapterMap, getNextChapterId } from "@/content/meta";
 
 type Props = {
+  /** Slug for reading progress (trunk or branch file id). */
   chapterId: string;
+  /** Trunk chapter id for sequential “next chapter” navigation. */
+  trunkChapterId: string;
   sectionElements: ReactElement[];
 };
 
-export function TapReader({ chapterId, sectionElements }: Props) {
+export function TapReader({
+  chapterId,
+  trunkChapterId,
+  sectionElements,
+}: Props) {
   const total = sectionElements.length;
   const saved = useEssayStore((s) => s.chapterProgress[chapterId] ?? -1);
   const setChapterProgress = useEssayStore((s) => s.setChapterProgress);
@@ -124,6 +133,10 @@ export function TapReader({ chapterId, sectionElements }: Props) {
     );
   }
 
+  const nextId = getNextChapterId(trunkChapterId);
+  const atLastBeat = activeIndex >= total - 1;
+  const showNextChapter = atLastBeat && Boolean(nextId);
+
   return (
     <TapReaderProvider
       completeMinigame={completeMinigame}
@@ -144,8 +157,20 @@ export function TapReader({ chapterId, sectionElements }: Props) {
             {sectionElements[activeIndex]}
           </Section>
         </AnimatePresence>
+        {showNextChapter && nextId && (
+          <div className="mx-auto mt-6 max-w-160 px-4 text-center">
+            <Link
+              href={`/chapters/${nextId}`}
+              className="inline-block rounded-full border border-(--chapter-accent) px-6 py-2 text-sm font-medium text-(--chapter-accent) hover:bg-(--chapter-accent)/10"
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              Next: {chapterMap[nextId]?.title ?? nextId}
+            </Link>
+          </div>
+        )}
         <motion.p
-          className="mx-auto mt-8 max-w-160 px-4 text-center text-sm text-(--chapter-muted-fg)"
+          className="mx-auto mt-6 max-w-160 px-4 text-center text-sm text-(--chapter-muted-fg)"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.7 }}
         >

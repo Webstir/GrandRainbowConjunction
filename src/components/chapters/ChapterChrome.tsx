@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { chapterOrder, chapterMap, getNextChapterId } from "@/content/meta";
+import { chapterOrder, chapterMap } from "@/content/meta";
 import { SignupForm } from "@/components/newsletter/SignupForm";
 
 export function ChapterChrome({
@@ -11,7 +11,6 @@ export function ChapterChrome({
   title: string;
   children: React.ReactNode;
 }) {
-  const nextId = getNextChapterId(chapterId);
   const idx = chapterOrder.indexOf(chapterId);
 
   return (
@@ -65,14 +64,6 @@ export function ChapterChrome({
             </Link>
           ))}
         </div>
-        {nextId && (
-          <Link
-            href={`/chapters/${nextId}`}
-            className="inline-block rounded-full border border-(--chapter-accent) px-6 py-2 text-sm font-medium text-(--chapter-accent) hover:bg-(--chapter-accent)/10"
-          >
-            Next: {chapterMap[nextId]?.title ?? nextId}
-          </Link>
-        )}
         <div className="border-t border-(--chapter-muted) pt-8">
           <p className="mb-3 text-xs uppercase tracking-widest text-(--chapter-muted-fg)">
             {"Newsletter \u{1F4E8}\u{2728}"}
