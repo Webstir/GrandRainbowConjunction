@@ -58,3 +58,19 @@ body {
 .font-pixel {
   font-family: var(--font-pixel), ui-monospace, monospace;
 }
+
+@keyframes heart-pulsate {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.22);
+  }
+}
+
+.heart-pulsate {
+  display: inline-block;
+  animation: heart-pulsate 1.15s ease-in-out infinite;
+  transform-origin: center;
+}

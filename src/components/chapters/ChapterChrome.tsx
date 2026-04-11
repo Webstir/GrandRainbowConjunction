@@ -77,6 +77,21 @@ export function ChapterChrome({
         <p className="text-xs text-(--chapter-muted-fg)">
           Chapter {idx >= 0 ? idx + 1 : "—"} of {chapterOrder.length}
         </p>
+        <p className="text-xs text-(--chapter-muted-fg)">
+          This site was made with{" "}
+          <span className="heart-pulsate" aria-label="love">
+            {"\u{1F49C}"}
+          </span>{" "}
+          by{" "}
+          <Link
+            href="https://NuancedDesign.com"
+            className="text-(--chapter-accent) underline decoration-(--chapter-muted) underline-offset-2 hover:decoration-(--chapter-accent)"
+            rel="noopener noreferrer"
+          >
+            Nuanced Design
+          </Link>
+          .
+        </p>
       </footer>
     </>
   );
