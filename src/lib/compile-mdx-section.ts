@@ -14,6 +14,10 @@ import type { MDXComponents } from "mdx/types";
  * - In **development**, MDX uses `jsxDEV` + `Fragment` from `arguments[0]`.
  * - In **production**, MDX uses `jsx` / `jsxs`.
  *
+ * `next.config` sets `outputFileTracingIncludes` for these plugin paths so
+ * serverless deploys (Vercel) still have them on disk — static imports are
+ * blocked by next-mdx-remote package exports.
+ *
  * We normalize `props.children` with `React.Children.toArray` on every MDX
  * element so sibling lists get implicit keys and React stops warning.
  */
