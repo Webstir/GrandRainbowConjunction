@@ -11,7 +11,7 @@ export function TipJar() {
           Tip jar
         </h2>
         <p className="mt-2 text-sm text-(--chapter-muted-fg)">
-          If Grand Rainbow Conjunction held something for you — medicine, a laugh,
+          If The Grand Rainbow Conjunction held something for you — medicine, a laugh,
           a minute of breath — you can leave a small thank-you via PayPal.
         </p>
       </div>

@@ -19,7 +19,7 @@ export function HomeGate() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#0c0618] text-white">
         <p className="text-white/70">
-          {"Entering Grand Rainbow Conjunction\u{2026} \u{1F308}\u{2728}"}
+          {"Entering The Grand Rainbow Conjunction\u{2026} \u{1F308}\u{2728}"}
         </p>
       </div>
     );

@@ -5,7 +5,7 @@ import { SignupForm } from "@/components/newsletter/SignupForm";
 
 export const metadata: Metadata = {
   title: "Subscribe",
-  description: "Dispatches from Grand Rainbow Conjunction.",
+  description: "Dispatches from The Grand Rainbow Conjunction.",
 };
 
 export default function SubscribePage() {
@@ -19,7 +19,7 @@ export default function SubscribePage() {
           ← Back to reading
         </Link>
         <h1 className="font-display text-3xl text-(--chapter-accent)">
-          {"\u{1F4E8}\u{2728} Letters from the Conjunction \u{1F308}"}
+          {"\u{1F4E8}\u{2728} Letters from The Grand Rainbow Conjunction \u{1F308}"}
         </h1>
         <p className="mt-4 text-(--chapter-muted-fg)">
           New beats when there&apos;s more road behind the story{" "}

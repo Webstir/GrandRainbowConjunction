@@ -19,7 +19,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return {
     title: entry?.title ?? "Chapter",
     description:
-      "Grand Rainbow Conjunction — Hollywood, music, long-haul miles, medicine work, and what survived.",
+      "The Grand Rainbow Conjunction — Hollywood, music, long-haul miles, medicine work, and what survived.",
   };
 }
 

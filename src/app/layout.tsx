@@ -21,15 +21,15 @@ const pixel = Press_Start_2P({
 
 export const metadata: Metadata = {
   title: {
-    default: "Grand Rainbow Conjunction",
-    template: "%s · Grand Rainbow Conjunction",
+    default: "The Grand Rainbow Conjunction",
+    template: "%s · The Grand Rainbow Conjunction",
   },
   description:
-    "Grand Rainbow Conjunction — a medicine path through Hollywood, music production, long-haul miles, and life after the darkest frame.",
+    "The Grand Rainbow Conjunction — a medicine path through Hollywood, music production, long-haul miles, and life after the darkest frame.",
   openGraph: {
-    title: "Grand Rainbow Conjunction",
+    title: "The Grand Rainbow Conjunction",
     description:
-      "Stories and ceremony at the conjunction: a shaman healer’s memoir in motion.",
+      "Stories and ceremony at The Grand Rainbow Conjunction: a shaman healer’s memoir in motion.",
   },
 };
 

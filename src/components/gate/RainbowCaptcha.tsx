@@ -147,7 +147,7 @@ export function RainbowCaptcha() {
         className="mb-6 max-w-md text-center"
       >
         <h1 className="font-display text-3xl sm:text-4xl">
-          {"\u{1F308}\u{2728} Grand Rainbow Conjunction"}
+          {"\u{1F308}\u{2728} The Grand Rainbow Conjunction"}
         </h1>
         <p className="mt-2 text-white/70">
           Cross when you&apos;re ready: draw a small{"\u{1F308}"}. Curves

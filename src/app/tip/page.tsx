@@ -5,7 +5,7 @@ import { TipJar } from "@/components/payments/TipJar";
 
 export const metadata: Metadata = {
   title: "Tip jar",
-  description: "Support Grand Rainbow Conjunction.",
+  description: "Support The Grand Rainbow Conjunction.",
 };
 
 export default function TipPage() {

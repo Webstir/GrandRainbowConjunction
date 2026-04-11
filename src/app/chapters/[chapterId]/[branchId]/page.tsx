@@ -20,7 +20,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   return {
     title: branch?.label ?? "Branch",
     description:
-      "Grand Rainbow Conjunction — a branch of the story, same crossing, different door.",
+      "The Grand Rainbow Conjunction — a branch of the story, same crossing, different door.",
   };
 }
 

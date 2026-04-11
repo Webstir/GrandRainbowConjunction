@@ -22,7 +22,7 @@ export function ChapterChrome({
             href="/"
             className="text-(--chapter-muted-fg) hover:text-(--chapter-accent)"
           >
-            Conjunction
+            The Grand Rainbow Conjunction
           </Link>
           <span className="font-display text-(--chapter-accent)">
             {title}

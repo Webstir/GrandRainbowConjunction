@@ -5,7 +5,7 @@ import { SynthLoader } from "./SynthLoader";
 
 export const metadata: Metadata = {
   title: "Synth",
-  description: "Web Audio playground · Grand Rainbow Conjunction.",
+  description: "Web Audio playground · The Grand Rainbow Conjunction.",
 };
 
 export default function SynthPage() {
