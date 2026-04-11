@@ -9,6 +9,7 @@ import {
   type ClipboardEvent,
   type KeyboardEvent,
 } from "react";
+import { useTapReaderMinigame } from "@/components/reader/TapReaderContext";
 
 const STORAGE_KEY = "tap-essay-arcade-initials";
 
@@ -17,8 +18,20 @@ function sanitizeLetter(c: string): string {
 }
 
 export function HighScoreInitials() {
+  const { completeMinigame } = useTapReaderMinigame();
   const [chars, setChars] = useState<[string, string, string]>(["", "", ""]);
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
+
+  const maybeAdvanceWhenFilled = useCallback(
+    (prev: [string, string, string], next: [string, string, string]) => {
+      const wasFull = Boolean(prev[0] && prev[1] && prev[2]);
+      const nowFull = Boolean(next[0] && next[1] && next[2]);
+      if (nowFull && !wasFull) {
+        window.setTimeout(() => completeMinigame(), 450);
+      }
+    },
+    [completeMinigame]
+  );
 
   useEffect(() => {
     try {
@@ -47,6 +60,7 @@ export function HighScoreInitials() {
     setChars((prev) => {
       const next: [string, string, string] = [...prev];
       next[i] = letter;
+      maybeAdvanceWhenFilled(prev, next);
       persist(next);
       return next;
     });
@@ -75,13 +89,16 @@ export function HighScoreInitials() {
     e.preventDefault();
     const text = e.clipboardData.getData("text").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 3);
     if (!text) return;
-    const next: [string, string, string] = [
-      text[0] ?? "",
-      text[1] ?? "",
-      text[2] ?? "",
-    ];
-    setChars(next);
-    persist(next);
+    setChars((prev) => {
+      const next: [string, string, string] = [
+        text[0] ?? "",
+        text[1] ?? "",
+        text[2] ?? "",
+      ];
+      maybeAdvanceWhenFilled(prev, next);
+      persist(next);
+      return next;
+    });
     const focusI = Math.min(text.length, 2);
     inputsRef.current[focusI]?.focus();
   };

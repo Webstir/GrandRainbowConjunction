@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTapReaderMinigame } from "@/components/reader/TapReaderContext";
 import { useEssayStore } from "@/lib/store";
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export function ReflectionQuestion({ chapterId, question }: Props) {
+  const { completeMinigame } = useTapReaderMinigame();
   const [text, setText] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "err">(
     "idle"
@@ -33,6 +35,7 @@ export function ReflectionQuestion({ chapterId, question }: Props) {
       }
       markAnswerSubmitted(chapterId);
       setStatus("done");
+      completeMinigame();
     } catch (e) {
       setStatus("err");
       setErr(e instanceof Error ? e.message : "Error");

@@ -153,8 +153,17 @@ export function TapReader({ chapterId, sectionElements }: Props) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.7 }}
         >
-          Tap, click, or space to continue · ← to go back · Swipe up / down on
-          mobile {"\u{2728}\u{1F308}"}
+          {activeIndex >= total - 1 ? (
+            <>
+              End of this chapter — ← to go back, or use the nav above to choose
+              another. {"\u{2728}\u{1F308}"}
+            </>
+          ) : (
+            <>
+              Tap, click, or space to continue · ← to go back · Swipe up / down
+              on mobile {"\u{2728}\u{1F308}"}
+            </>
+          )}
         </motion.p>
       </div>
     </TapReaderProvider>

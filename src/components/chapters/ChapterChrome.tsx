@@ -17,30 +17,35 @@ export function ChapterChrome({
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-(--chapter-muted) bg-(--chapter-card)">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3 text-sm">
-          <Link
-            href="/"
-            className="text-(--chapter-muted-fg) hover:text-(--chapter-accent)"
-          >
-            The Grand Rainbow Conjunction
-          </Link>
-          <span className="font-display text-(--chapter-accent)">
-            {title}
-          </span>
-          <nav className="flex flex-wrap gap-3 text-(--chapter-muted-fg)">
-            <Link
-              href="/rainbow-gallery"
-              className="hover:text-(--chapter-accent)"
+        <div className="mx-auto max-w-3xl px-4 py-3">
+          <div className="flex flex-col gap-3">
+            <p className="font-display text-center text-[0.95rem] leading-snug text-(--chapter-accent) sm:text-lg">
+              {title}
+            </p>
+            <nav
+              className="grid grid-cols-3 gap-2 text-center text-xs text-(--chapter-muted-fg) sm:text-sm"
+              aria-label="Chapter utilities"
             >
-              Rainbow wall
-            </Link>
-            <Link href="/tip" className="hover:text-(--chapter-accent)">
-              Tip
-            </Link>
-            <Link href="/subscribe" className="hover:text-(--chapter-accent)">
-              Subscribe
-            </Link>
-          </nav>
+              <Link
+                href="/rainbow-gallery"
+                className="min-w-0 hyphens-auto break-words hover:text-(--chapter-accent)"
+              >
+                Rainbow wall
+              </Link>
+              <Link
+                href="/tip"
+                className="min-w-0 hover:text-(--chapter-accent)"
+              >
+                Tip
+              </Link>
+              <Link
+                href="/subscribe"
+                className="min-w-0 hover:text-(--chapter-accent)"
+              >
+                Subscribe
+              </Link>
+            </nav>
+          </div>
         </div>
       </header>
       <main>{children}</main>
