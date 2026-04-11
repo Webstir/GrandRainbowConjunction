@@ -1,10 +1,7 @@
-import { createRequire } from "node:module";
-import path from "node:path";
 import React from "react";
 import { compile } from "@mdx-js/mdx";
 import * as JsxDevRuntime from "react/jsx-dev-runtime";
 import * as JsxRuntime from "react/jsx-runtime";
-import type { Pluggable } from "unified";
 import { VFile } from "vfile";
 import type { MDXComponents } from "mdx/types";
 
@@ -14,24 +11,15 @@ import type { MDXComponents } from "mdx/types";
  * - In **development**, MDX uses `jsxDEV` + `Fragment` from `arguments[0]`.
  * - In **production**, MDX uses `jsx` / `jsxs`.
  *
- * `next.config` sets `outputFileTracingIncludes` for these plugin paths so
- * serverless deploys (Vercel) still have them on disk — static imports are
- * blocked by next-mdx-remote package exports.
+ * We compile MDX to a function body and evaluate it via Reflect.construct so
+ * it runs in a limited scope with no access to real module imports.
+ * The next-mdx-remote import/export removal plugins are omitted because this
+ * site's MDX is trusted author content, and `outputFormat: "function-body"`
+ * already prevents real import() calls from working inside compiled MDX.
  *
  * We normalize `props.children` with `React.Children.toArray` on every MDX
  * element so sibling lists get implicit keys and React stops warning.
  */
-const requireFromNmdr = createRequire(
-  path.join(process.cwd(), "node_modules/next-mdx-remote/dist/serialize.js")
-);
-
-const { removeImportsExportsPlugin } = requireFromNmdr(
-  "./plugins/remove-imports-exports.js"
-) as { removeImportsExportsPlugin: Pluggable };
-
-const { CreateRemoveDangerousCallsPlugin } = requireFromNmdr(
-  "./plugins/remove-dangerous-javascript-expressions.js"
-) as { CreateRemoveDangerousCallsPlugin: (...args: unknown[]) => Pluggable };
 
 type MdxContentProps = { components?: MDXComponents };
 
@@ -99,10 +87,6 @@ export async function compileMdxSection(
   const jsxRuntime = createMdxEvalRuntime();
   const vfile = new VFile(source);
   const compiled = await compile(vfile, {
-    remarkPlugins: [
-      removeImportsExportsPlugin,
-      CreateRemoveDangerousCallsPlugin(),
-    ],
     outputFormat: "function-body",
     providerImportSource: undefined,
     development: mdxDevelopment,
@@ -114,7 +98,9 @@ export async function compileMdxSection(
   const hydrateFn = Reflect.construct(
     Function,
     keys.concat(compiledSource) as unknown as string[]
-  ) as (...args: unknown[]) => { default: React.ComponentType<MdxContentProps> };
+  ) as (...args: unknown[]) => {
+    default: React.ComponentType<MdxContentProps>;
+  };
   const Content = hydrateFn.apply(hydrateFn, values).default;
   return React.createElement(Content, { components });
 }

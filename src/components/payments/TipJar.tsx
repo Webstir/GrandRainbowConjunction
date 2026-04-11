@@ -1,25 +1,8 @@
-"use client";
-
-import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
-import {
-  getPaypalClientId,
-  getCashAppTag,
-  getStripePublishableKey,
-} from "@/lib/payments";
-
-const PRESETS = [3, 5, 10];
+import { getPayPalMeUrl, getPayPalMeUsername } from "@/lib/payments";
 
 export function TipJar() {
-  const paypalId = getPaypalClientId();
-  const cashTag = getCashAppTag();
-  const stripePk = getStripePublishableKey();
-
-  const paypalOptions = {
-    clientId: paypalId ?? "",
-    intent: "capture" as const,
-    currency: "USD",
-    enableFunding: "venmo" as const,
-  };
+  const url = getPayPalMeUrl();
+  const handle = getPayPalMeUsername();
 
   return (
     <div className="mx-auto max-w-lg space-y-8 rounded-3xl border border-(--chapter-muted) bg-(--chapter-card) p-8">
@@ -29,92 +12,29 @@ export function TipJar() {
         </h2>
         <p className="mt-2 text-sm text-(--chapter-muted-fg)">
           If Grand Rainbow Conjunction held something for you — medicine, a laugh,
-          a minute of breath — you can leave a small thank-you. No account
-          needed for most options.
+          a minute of breath — you can leave a small thank-you via PayPal.
         </p>
       </div>
-
-      {paypalId ? (
-        <div>
-          <p className="mb-3 text-xs uppercase tracking-widest text-(--chapter-muted-fg)">
-            PayPal / Venmo
-          </p>
-          <PayPalScriptProvider options={paypalOptions}>
-            <PayPalButtons
-              style={{ layout: "vertical", shape: "pill" }}
-              createOrder={(_, actions) =>
-                actions.order.create({
-                  intent: "CAPTURE",
-                  purchase_units: [
-                    { amount: { currency_code: "USD", value: "5.00" } },
-                  ],
-                })
-              }
-              onApprove={async (_, actions) => {
-                await actions.order?.capture();
-              }}
-            />
-          </PayPalScriptProvider>
-        </div>
-      ) : (
-        <p className="text-sm text-(--chapter-muted-fg)">
-          Set{" "}
-          <code className="rounded-sm bg-black/30 px-1">NEXT_PUBLIC_PAYPAL_CLIENT_ID</code>{" "}
-          to enable PayPal and Venmo buttons.
-        </p>
-      )}
 
       <div>
         <p className="mb-3 text-xs uppercase tracking-widest text-(--chapter-muted-fg)">
-          Preset amounts (Cash App)
+          PayPal
         </p>
-        <div className="flex flex-wrap gap-2">
-          {PRESETS.map((n) => {
-            const tag = cashTag
-              ? cashTag.startsWith("$")
-                ? cashTag
-                : `$${cashTag}`
-              : "";
-            return (
-            <a
-              key={n}
-              href={tag ? `https://cash.app/${tag}/${n}` : "#"}
-              className="rounded-full border border-(--chapter-accent)/50 px-4 py-2 text-sm hover:bg-(--chapter-accent)/10"
-            >
-              ${n}
-            </a>
-          );
-          })}
-        </div>
-        {!cashTag && (
-          <p className="mt-2 text-xs text-(--chapter-muted-fg)">
-            Set{" "}
-            <code className="rounded-sm bg-black/30 px-1">NEXT_PUBLIC_CASH_APP_TAG</code>{" "}
-            (e.g. $yourname) for Cash App links.
-          </p>
-        )}
-      </div>
-
-      <div className="rounded-xl border border-dashed border-(--chapter-muted) p-4 text-sm text-(--chapter-muted-fg)">
-        <strong className="text-(--foreground)">Apple Pay / Google Pay:</strong>{" "}
-        wire{" "}
-        <code className="rounded-sm bg-black/30 px-1">Stripe Payment Request Button</code>{" "}
-        via a small{" "}
-        <code className="rounded-sm bg-black/30 px-1">/api/tip/intent</code> route when
-        you&apos;re ready.{" "}
-        {stripePk ? (
-          <span>
-            Stripe publishable key is set — you can add Elements next.
-          </span>
-        ) : (
-          <span>
-            Add{" "}
-            <code className="rounded-sm bg-black/30 px-1">
-              NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-            </code>{" "}
-            when configuring Stripe.
-          </span>
-        )}
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex w-full items-center justify-center rounded-full border border-(--chapter-accent)/50 bg-(--chapter-accent)/15 px-6 py-3 text-center text-sm font-medium text-(--chapter-accent) hover:bg-(--chapter-accent)/25"
+        >
+          Send a tip on PayPal (@{handle})
+        </a>
+        <p className="mt-3 text-xs text-(--chapter-muted-fg)">
+          Opens{" "}
+          <span className="font-mono text-[0.85em] text-(--foreground)/80">
+            paypal.me/{handle}
+          </span>{" "}
+          in a new tab. You choose the amount there — no extra setup on this site.
+        </p>
       </div>
     </div>
   );
