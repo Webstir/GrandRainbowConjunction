@@ -3,11 +3,11 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
+  useMemo,
   useRef,
-  useState,
   type MouseEvent,
   type PointerEvent,
-  type ReactElement,
 } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -16,46 +16,63 @@ import { ProgressBar } from "./ProgressBar";
 import { TapReaderProvider } from "./TapReaderContext";
 import { useEssayStore } from "@/lib/store";
 import { chapterMap, getNextChapterId } from "@/content/meta";
+import {
+  type ReaderParagraph,
+  totalTapSteps,
+  visibleFragmentsAtTapStep,
+} from "@/lib/reader-paragraph";
 
 type Props = {
   /** Slug for reading progress (trunk or branch file id). */
   chapterId: string;
   /** Trunk chapter id for sequential “next chapter” navigation. */
   trunkChapterId: string;
-  sectionElements: ReactElement[];
+  paragraphs: ReaderParagraph[];
 };
 
 export function TapReader({
   chapterId,
   trunkChapterId,
-  sectionElements,
+  paragraphs,
 }: Props) {
-  const total = sectionElements.length;
-  const saved = useEssayStore((s) => s.chapterProgress[chapterId] ?? -1);
+  const total = totalTapSteps(paragraphs);
+  const rawIndex = useEssayStore((s) => s.chapterProgress[chapterId] ?? 0);
   const setChapterProgress = useEssayStore((s) => s.setChapterProgress);
-
-  const [activeIndex, setActiveIndex] = useState(() =>
-    Math.min(Math.max(0, saved), Math.max(0, total - 1))
+  const activeIndex = useMemo(
+    () => Math.min(Math.max(0, rawIndex), Math.max(0, total - 1)),
+    [rawIndex, total]
   );
+
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ y: number; x: number } | null>(null);
   const suppressReaderKeyboardRef = useRef(0);
 
   const advance = useCallback(() => {
-    setActiveIndex((i) => Math.min(i + 1, total - 1));
-  }, [total]);
+    const raw = useEssayStore.getState().chapterProgress[chapterId] ?? 0;
+    const cur = Math.min(Math.max(0, raw), Math.max(0, total - 1));
+    setChapterProgress(chapterId, Math.min(cur + 1, total - 1));
+  }, [chapterId, total, setChapterProgress]);
 
   const goBack = useCallback(() => {
-    setActiveIndex((i) => Math.max(0, i - 1));
-  }, []);
+    const raw = useEssayStore.getState().chapterProgress[chapterId] ?? 0;
+    const cur = Math.min(Math.max(0, raw), Math.max(0, total - 1));
+    setChapterProgress(chapterId, Math.max(0, cur - 1));
+  }, [chapterId, total, setChapterProgress]);
 
   const completeMinigame = useCallback(() => {
     advance();
   }, [advance]);
 
+  /** Each time you open this chapter (including from another), start at tap 0. */
+  useLayoutEffect(() => {
+    setChapterProgress(chapterId, 0);
+  }, [chapterId, setChapterProgress]);
+
   useEffect(() => {
-    setChapterProgress(chapterId, activeIndex);
-  }, [chapterId, activeIndex, setChapterProgress]);
+    if (rawIndex !== activeIndex) {
+      setChapterProgress(chapterId, activeIndex);
+    }
+  }, [chapterId, rawIndex, activeIndex, setChapterProgress]);
 
   useEffect(() => {
     const el = containerRef.current?.querySelector(
@@ -136,6 +153,11 @@ export function TapReader({
   const nextId = getNextChapterId(trunkChapterId);
   const atLastBeat = activeIndex >= total - 1;
   const showNextChapter = atLastBeat && Boolean(nextId);
+  const { paragraphIndex, fragments } = visibleFragmentsAtTapStep(
+    paragraphs,
+    activeIndex
+  );
+  const stackCount = fragments.length;
 
   return (
     <TapReaderProvider
@@ -153,8 +175,21 @@ export function TapReader({
         aria-label="Tap or press space to advance"
       >
         <AnimatePresence mode="wait">
-          <Section key={activeIndex} index={activeIndex} activeIndex={activeIndex}>
-            {sectionElements[activeIndex]}
+          <Section key={paragraphIndex} tapStep={activeIndex}>
+            {fragments.map((el, i) => (
+              <motion.div
+                key={i}
+                className="[&:not(:first-child)]:mt-4"
+                initial={i === stackCount - 1 ? { opacity: 0, y: 10 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.35,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                {el}
+              </motion.div>
+            ))}
           </Section>
         </AnimatePresence>
         {showNextChapter && nextId && (

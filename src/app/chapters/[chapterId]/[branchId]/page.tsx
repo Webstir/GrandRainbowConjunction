@@ -36,7 +36,11 @@ export default async function BranchPage(props: Props) {
   if (!chapterFileExists(slug)) notFound();
 
   const comps = getMdxComponents(params.chapterId, contentId);
-  const { frontmatter, nodes } = await compileChapterSections(slug, comps);
+  const { frontmatter, paragraphs } = await compileChapterSections(
+    slug,
+    comps,
+    contentId
+  );
   const title = (frontmatter.title as string) ?? entry.title;
 
   return (
@@ -45,7 +49,7 @@ export default async function BranchPage(props: Props) {
         <TapReader
           chapterId={contentId}
           trunkChapterId={params.chapterId}
-          sectionElements={nodes}
+          paragraphs={paragraphs}
         />
       </ChapterChrome>
     </ChapterTheme>

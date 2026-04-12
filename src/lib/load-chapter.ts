@@ -4,7 +4,12 @@ import React, { type ReactElement } from "react";
 import matter from "gray-matter";
 import type { MDXComponents } from "mdx/types";
 import { compileMdxSection } from "@/lib/compile-mdx-section";
+import type { ReaderParagraph } from "@/lib/reader-paragraph";
+import { WisdomSummaryTap } from "@/components/chapter-end/WisdomSummaryTap";
+import { expandTapSectionToRawParagraphs } from "@/lib/tap-beats";
 import { getChapterEntry } from "@/content/meta";
+
+export type { ReaderParagraph } from "@/lib/reader-paragraph";
 
 const TAP_SPLIT = /\n\s*\{\/\*\s*TAP\s*\*\/\}\s*\n/;
 
@@ -39,20 +44,60 @@ export function loadChapterRaw(slug: string): {
 
 export async function compileChapterSections(
   slug: string,
-  components: MDXComponents
+  components: MDXComponents,
+  contentId: string
 ): Promise<{
   frontmatter: ChapterFrontmatter;
-  nodes: ReactElement[];
+  paragraphs: ReaderParagraph[];
 }> {
   const { frontmatter, sections } = loadChapterRaw(slug);
-  const nodes: ReactElement[] = [];
+  const paragraphs: ReaderParagraph[] = [];
+  let keyCounter = 0;
+  let runningGlobalStep = 0;
   for (let i = 0; i < sections.length; i++) {
-    const content = await compileMdxSection(sections[i], components);
-    nodes.push(
-      React.createElement(React.Fragment, { key: `tap-section-${i}` }, content)
-    );
+    for (const raw of expandTapSectionToRawParagraphs(sections[i])) {
+      if (raw.kind === "atomic") {
+        const content = await compileMdxSection(raw.source, components);
+        paragraphs.push({
+          type: "atomic",
+          fragment: React.createElement(
+            React.Fragment,
+            { key: `tap-${keyCounter++}` },
+            content
+          ),
+        });
+        runningGlobalStep += 1;
+      } else if (raw.kind === "wisdomStack") {
+        const steps = raw.items.length;
+        const fragment = React.createElement(WisdomSummaryTap, {
+          items: raw.items,
+          startStep: runningGlobalStep,
+          chapterId: contentId,
+        });
+        paragraphs.push({
+          type: "wisdomProgressive",
+          steps,
+          fragment: React.createElement(
+            React.Fragment,
+            { key: `tap-${keyCounter++}` },
+            fragment
+          ),
+        });
+        runningGlobalStep += steps;
+      } else {
+        const fragments: ReactElement[] = [];
+        for (const sentence of raw.sentences) {
+          const content = await compileMdxSection(sentence, components);
+          fragments.push(
+            React.createElement(React.Fragment, { key: `tap-${keyCounter++}` }, content)
+          );
+        }
+        paragraphs.push({ type: "prose", fragments });
+        runningGlobalStep += raw.sentences.length;
+      }
+    }
   }
-  return { frontmatter, nodes };
+  return { frontmatter, paragraphs };
 }
 
 export function resolveChapterSlug(

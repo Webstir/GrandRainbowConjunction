@@ -25,11 +25,12 @@ export const useEssayStore = create<EssayStore>()(
       gateCleared: false,
       setGateCleared: (v) => set({ gateCleared: v }),
       chapterProgress: {},
+      /** Current tap index for a chapter (not a high-water mark). */
       setChapterProgress: (chapterId, index) =>
         set((s) => ({
           chapterProgress: {
             ...s.chapterProgress,
-            [chapterId]: Math.max(s.chapterProgress[chapterId] ?? -1, index),
+            [chapterId]: index,
           },
         })),
       branchChoices: {},
@@ -49,10 +50,17 @@ export const useEssayStore = create<EssayStore>()(
     }),
     {
       name: "tap-essay-store",
+      version: 3,
+      migrate: (persisted, version) => {
+        const p = persisted as Record<string, unknown>;
+        if (version < 3) {
+          return { ...p, chapterProgress: {} };
+        }
+        return p;
+      },
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
         gateCleared: s.gateCleared,
-        chapterProgress: s.chapterProgress,
         branchChoices: s.branchChoices,
         answersSubmitted: s.answersSubmitted,
         hasSubscribed: s.hasSubscribed,
