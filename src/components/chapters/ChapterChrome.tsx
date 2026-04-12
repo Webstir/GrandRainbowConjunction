@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { chapterOrder, chapterMap } from "@/content/meta";
 import { SignupForm } from "@/components/newsletter/SignupForm";
+import { GOFUNDME_SAVE_RICO_URL } from "@/lib/support";
 
 export function ChapterChrome({
   chapterId,
@@ -32,7 +33,9 @@ export function ChapterChrome({
                 Rainbow wall
               </Link>
               <Link
-                href="/tip"
+                href={GOFUNDME_SAVE_RICO_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="min-w-0 hover:text-(--chapter-accent)"
               >
                 Tip
