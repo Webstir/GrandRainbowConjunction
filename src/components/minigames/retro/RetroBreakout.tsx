@@ -13,9 +13,22 @@ import {
   playWin,
 } from "@/lib/chiptune";
 
-type Props = { brickRows?: number };
+type Props = {
+  brickRows?: number;
+  /** Cabinet title (default: classic label). */
+  title?: string;
+  /** Short player hint under the marquee. */
+  helpText?: string;
+  /** One label per brick row (top → bottom), e.g. five journey themes. */
+  rowThemes?: string[];
+};
 
-export function RetroBreakout({ brickRows = 5 }: Props) {
+export function RetroBreakout({
+  brickRows = 5,
+  title = "Brick Basher",
+  helpText = "← → or drag · Clear every brick. Miss three — new wave.",
+  rowThemes,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { completeMinigame } = useTapReaderMinigame();
   const rafRef = useRef<number | undefined>(undefined);
@@ -225,10 +238,25 @@ export function RetroBreakout({ brickRows = 5 }: Props) {
     );
   };
 
+  const rows = brickRows;
+  const themeLegend =
+    rowThemes && rowThemes.length === rows ? rowThemes : null;
+
   return (
-    <MinigameWrapper title="Brick Basher" era="1986">
+    <MinigameWrapper title={title} era="1986">
+      {themeLegend && (
+        <p className="font-pixel mb-2 text-[8px] leading-snug text-[#8fbc8f] sm:text-[9px]">
+          Each row, top → bottom:{" "}
+          {themeLegend.map((t, i) => (
+            <span key={`${i}-${t}`}>
+              {i > 0 ? " · " : null}
+              <span className="text-[#f4d03f]">{t}</span>
+            </span>
+          ))}
+        </p>
+      )}
       <p className="font-pixel mb-3 text-[9px] leading-relaxed text-[#a8c4a8]">
-        ← → or drag · Clear every brick. Miss three — new wave.
+        {helpText}
       </p>
       <div className="font-pixel mb-2 flex justify-between text-[8px] text-[#f4d03f]">
         <span>LIVES {hud.lives}</span>

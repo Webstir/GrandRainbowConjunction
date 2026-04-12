@@ -14,10 +14,19 @@ type Props = {
 
 export function Minigame({ name, data = {} }: Props) {
   switch (name) {
-    case "retro-breakout":
+    case "retro-breakout": {
+      const rowThemes = Array.isArray(data.rowThemes)
+        ? data.rowThemes.map((t) => String(t))
+        : undefined;
       return (
-        <RetroBreakout brickRows={Number(data.rows ?? data.brickRows ?? 5)} />
+        <RetroBreakout
+          brickRows={Number(data.rows ?? data.brickRows ?? 5)}
+          title={typeof data.title === "string" ? data.title : undefined}
+          helpText={typeof data.helpText === "string" ? data.helpText : undefined}
+          rowThemes={rowThemes}
+        />
       );
+    }
     case "retro-snake":
       return <RetroSnake />;
     case "retro-invaders":

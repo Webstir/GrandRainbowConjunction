@@ -9,6 +9,28 @@ import { playMiss, playPaddle, playWall, playWin } from "@/lib/chiptune";
 const PADDLE_W = 34;
 const PADDLE_H = 5;
 const WIN_RALLY = 14;
+/** Ball center x bounds (matches wall collisions). */
+const BALL_X_MIN = 4;
+const BALL_X_MAX = RETRO_W - 4;
+/** CPU paddle max speed per frame — slightly above player (2.6) for a sharp defender. */
+const AI_MAX_SPEED = 3.35;
+
+/** Where the ball center will be along x after `t` frames, with vertical-wall bounces. */
+function predictBallX(bx0: number, bvx: number, t: number): number {
+  let x = bx0;
+  let vx = bvx;
+  let left = t;
+  for (let i = 0; i < 160 && left > 1e-6; i++) {
+    if (Math.abs(vx) < 1e-8) return x;
+    const wall = vx > 0 ? BALL_X_MAX : BALL_X_MIN;
+    const dt = (wall - x) / vx;
+    if (dt >= left) return x + vx * left;
+    x = wall;
+    left -= dt;
+    vx = -vx;
+  }
+  return x;
+}
 
 export function RetroPong() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,6 +64,10 @@ export function RetroPong() {
       bvy = 1.9 * (Math.random() > 0.5 ? 1 : -1);
     };
 
+    const pyTop = 10;
+    /** Ball-center y when intercepting the top paddle from below (see collision band). */
+    const aiInterceptY = pyTop + PADDLE_H + 3;
+
     const loop = () => {
       if (wonRef.current) return;
       if (paddleCd > 0) paddleCd--;
@@ -53,7 +79,16 @@ export function RetroPong() {
         if (keysRef.current.right) px = Math.min(RETRO_W - PADDLE_W / 2, px + 2.6);
       }
 
-      aiX += (bx - aiX) * 0.08;
+      let targetX = bx;
+      if (bvy < 0 && by > aiInterceptY) {
+        const t = (aiInterceptY - by) / bvy;
+        if (t > 0 && t < 240) targetX = predictBallX(bx, bvx, t);
+      } else if (bvy > 0) {
+        targetX = bx * 0.35 + (RETRO_W / 2) * 0.65;
+      }
+      const aim = targetX - aiX;
+      if (Math.abs(aim) <= AI_MAX_SPEED) aiX = targetX;
+      else aiX += Math.sign(aim) * AI_MAX_SPEED;
       aiX = Math.max(PADDLE_W / 2, Math.min(RETRO_W - PADDLE_W / 2, aiX));
 
       bx += bvx;
@@ -70,7 +105,6 @@ export function RetroPong() {
       }
 
       const pyBottom = RETRO_H - 10;
-      const pyTop = 10;
 
       if (
         by > pyBottom - 8 &&

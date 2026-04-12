@@ -21,7 +21,7 @@ export const chapterOrder: string[] = [
 
 export const chapterMap: Record<string, ChapterMeta> = {
   "01-intro": {
-    title: "The Beginning",
+    title: "Here & There",
     file: "01-intro",
     next: "02-second",
     branches: {
