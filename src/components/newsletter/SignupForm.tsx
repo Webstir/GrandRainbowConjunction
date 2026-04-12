@@ -34,7 +34,15 @@ export function SignupForm({ compact }: Props) {
         body: JSON.stringify({ email: email.trim() }),
       });
       const j = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(j.error ?? "Signup failed");
+      if (!res.ok) {
+        const msg =
+          typeof j.error === "string" && j.error
+            ? j.error
+            : res.status === 503
+              ? "Newsletter isn’t connected on the server yet."
+              : "Signup failed";
+        throw new Error(msg);
+      }
       setHasSubscribed(true);
     } catch (e) {
       setStatus("err");
