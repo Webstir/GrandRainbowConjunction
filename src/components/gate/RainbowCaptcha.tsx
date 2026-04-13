@@ -41,6 +41,8 @@ export function RainbowCaptcha({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const strokesRef = useRef<Stroke[]>([]);
   const currentRef = useRef<StrokePoint[]>([]);
+  /** iOS WebKit often reports touch pointermove with buttons=0 and pressure=0; track the stroke pointer instead. */
+  const strokePointerIdRef = useRef<number | null>(null);
   const hueRef = useRef(0);
   const [hue, setHue] = useState(0);
   const [attempts, setAttempts] = useState(0);
@@ -149,6 +151,7 @@ export function RainbowCaptcha({
   const clearCanvas = () => {
     strokesRef.current = [];
     currentRef.current = [];
+    strokePointerIdRef.current = null;
     drawBg();
   };
 
@@ -161,14 +164,19 @@ export function RainbowCaptcha({
     if (phase !== "draw" || passing) return;
     const c = canvasRef.current;
     if (!c) return;
-    c.setPointerCapture(e.pointerId);
+    strokePointerIdRef.current = e.pointerId;
+    try {
+      c.setPointerCapture(e.pointerId);
+    } catch {
+      /* Some WebKit builds reject capture for certain pointer types */
+    }
     const { x, y } = canvasCoords(e, c);
     currentRef.current = [{ x, y, t: Date.now() }];
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (phase !== "draw" || !currentRef.current.length || passing) return;
-    if (e.buttons !== 1 && e.pressure === 0) return;
+    if (strokePointerIdRef.current !== e.pointerId) return;
     const c = canvasRef.current;
     if (!c) return;
     const ctx = c.getContext("2d");
@@ -186,8 +194,10 @@ export function RainbowCaptcha({
     ctx.stroke();
   };
 
-  const onPointerUp = () => {
+  const onPointerUp = (e: React.PointerEvent) => {
     if (phase !== "draw" || passing) return;
+    if (strokePointerIdRef.current !== e.pointerId) return;
+    strokePointerIdRef.current = null;
     if (currentRef.current.length < 2) {
       currentRef.current = [];
       return;
@@ -248,6 +258,7 @@ export function RainbowCaptcha({
     setPassing(false);
     strokesRef.current = [];
     currentRef.current = [];
+    strokePointerIdRef.current = null;
     setMySnapshot(null);
     setPhase("browse");
   };
@@ -255,7 +266,7 @@ export function RainbowCaptcha({
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-[#0c0618] px-4 py-12 text-white">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={false}
         animate={{ opacity: 1, y: 0 }}
         className="mb-6 max-w-md text-center"
       >
@@ -305,6 +316,10 @@ export function RainbowCaptcha({
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
               onPointerCancel={onPointerUp}
+              onLostPointerCapture={() => {
+                strokePointerIdRef.current = null;
+                currentRef.current = [];
+              }}
             />
             {passing && (
               <motion.div
@@ -373,7 +388,7 @@ export function RainbowCaptcha({
 
           {phase === "share" && mySnapshot && (
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
+              initial={false}
               animate={{ opacity: 1, y: 0 }}
               className="mt-6 w-full max-w-lg space-y-4"
             >
@@ -452,7 +467,7 @@ export function RainbowCaptcha({
 
       {phase === "browse" && (
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={false}
           animate={{ opacity: 1 }}
           className="w-full max-w-3xl"
         >
@@ -513,7 +528,7 @@ export function RainbowCaptcha({
       <AnimatePresence>
         {phase === "draw" && msg && (
           <motion.p
-            initial={{ opacity: 0 }}
+            initial={false}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="mt-4 max-w-md text-center text-sm text-amber-200"
