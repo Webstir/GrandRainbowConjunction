@@ -50,13 +50,17 @@ export const useEssayStore = create<EssayStore>()(
     }),
     {
       name: "tap-essay-store",
-      version: 3,
+      version: 4,
       migrate: (persisted, version) => {
         const p = persisted as Record<string, unknown>;
+        let next = { ...p };
         if (version < 3) {
-          return { ...p, chapterProgress: {} };
+          next = { ...next, chapterProgress: {} };
         }
-        return p;
+        if (version < 4) {
+          next = { ...next, answersSubmitted: {} };
+        }
+        return next;
       },
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({

@@ -41,8 +41,12 @@ export function RainbowCaptcha({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const strokesRef = useRef<Stroke[]>([]);
   const currentRef = useRef<StrokePoint[]>([]);
-  /** iOS WebKit often reports touch pointermove with buttons=0 and pressure=0; track the stroke pointer instead. */
+  /** Active stroke: pointer id, or touch-only path uses a sentinel. */
   const strokePointerIdRef = useRef<number | null>(null);
+  const removeDocPointerRef = useRef<(() => void) | null>(null);
+  const removeDocTouchRef = useRef<(() => void) | null>(null);
+  /** touchstart runs before pointerdown; skip duplicate pointer handling for the same gesture. */
+  const lockTouchGestureRef = useRef(false);
   const hueRef = useRef(0);
   const [hue, setHue] = useState(0);
   const [attempts, setAttempts] = useState(0);
@@ -58,6 +62,10 @@ export function RainbowCaptcha({
   const [galleryLoading, setGalleryLoading] = useState(false);
   const [postBusy, setPostBusy] = useState(false);
   const [postError, setPostError] = useState<string | null>(null);
+  const phaseRef = useRef(phase);
+  const passingRef = useRef(passing);
+  phaseRef.current = phase;
+  passingRef.current = passing;
 
   const resize = useCallback(() => {
     const c = canvasRef.current;
@@ -148,56 +156,64 @@ export function RainbowCaptcha({
     setMsg(lines[Math.min(attempts, lines.length - 1)]);
   }, [attempts]);
 
+  const detachDocPointer = useCallback(() => {
+    removeDocPointerRef.current?.();
+    removeDocPointerRef.current = null;
+  }, []);
+
+  const detachDocTouch = useCallback(() => {
+    removeDocTouchRef.current?.();
+    removeDocTouchRef.current = null;
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      detachDocPointer();
+      detachDocTouch();
+    };
+  }, [detachDocPointer, detachDocTouch]);
+
+  useEffect(() => {
+    if (phase !== "draw") {
+      detachDocPointer();
+      detachDocTouch();
+    }
+  }, [phase, detachDocPointer, detachDocTouch]);
+
   const clearCanvas = () => {
     strokesRef.current = [];
     currentRef.current = [];
     strokePointerIdRef.current = null;
+    lockTouchGestureRef.current = false;
+    detachDocPointer();
+    detachDocTouch();
     drawBg();
   };
 
-  const canvasCoords = (e: React.PointerEvent, c: HTMLCanvasElement) => {
+  const canvasCoordsClient = (clientX: number, clientY: number, c: HTMLCanvasElement) => {
     const r = c.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
+    return { x: clientX - r.left, y: clientY - r.top };
   };
 
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (phase !== "draw" || passing) return;
-    const c = canvasRef.current;
-    if (!c) return;
-    strokePointerIdRef.current = e.pointerId;
-    try {
-      c.setPointerCapture(e.pointerId);
-    } catch {
-      /* Some WebKit builds reject capture for certain pointer types */
-    }
-    const { x, y } = canvasCoords(e, c);
-    currentRef.current = [{ x, y, t: Date.now() }];
-  };
-
-  const onPointerMove = (e: React.PointerEvent) => {
-    if (phase !== "draw" || !currentRef.current.length || passing) return;
-    if (strokePointerIdRef.current !== e.pointerId) return;
+  const paintSegment = useCallback((x: number, y: number, pressure: number) => {
+    if (phaseRef.current !== "draw" || !currentRef.current.length || passingRef.current) return;
     const c = canvasRef.current;
     if (!c) return;
     const ctx = c.getContext("2d");
     if (!ctx) return;
-    const { x, y } = canvasCoords(e, c);
     const prev = currentRef.current[currentRef.current.length - 1];
     currentRef.current.push({ x, y, t: Date.now(), hue: hueRef.current });
     ctx.strokeStyle = `hsl(${hueRef.current} 90% 60%)`;
-    ctx.lineWidth = Math.max(2, 2 + (e.pressure || 0.5) * 6);
+    ctx.lineWidth = Math.max(2, 2 + (pressure || 0.5) * 6);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.beginPath();
     ctx.moveTo(prev.x, prev.y);
     ctx.lineTo(x, y);
     ctx.stroke();
-  };
+  }, []);
 
-  const onPointerUp = (e: React.PointerEvent) => {
-    if (phase !== "draw" || passing) return;
-    if (strokePointerIdRef.current !== e.pointerId) return;
-    strokePointerIdRef.current = null;
+  const commitStrokeIfAny = useCallback(() => {
     if (currentRef.current.length < 2) {
       currentRef.current = [];
       return;
@@ -207,7 +223,117 @@ export function RainbowCaptcha({
       hueBand: hueToBand(hueRef.current),
     });
     currentRef.current = [];
+  }, []);
+
+  const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (phase !== "draw" || passing) return;
+    if (!e.isPrimary) return;
+    if (e.pointerType === "touch" && lockTouchGestureRef.current) return;
+
+    const c = canvasRef.current;
+    if (!c) return;
+
+    detachDocPointer();
+
+    strokePointerIdRef.current = e.pointerId;
+    try {
+      c.setPointerCapture(e.pointerId);
+    } catch {
+      /* Some WebKit builds reject capture for certain pointer types */
+    }
+
+    const { x, y } = canvasCoordsClient(e.clientX, e.clientY, c);
+    currentRef.current = [{ x, y, t: Date.now() }];
+
+    const move = (ev: PointerEvent) => {
+      if (!ev.isPrimary) return;
+      if (strokePointerIdRef.current !== ev.pointerId) return;
+      if (phaseRef.current !== "draw" || passingRef.current) return;
+      const cc = canvasRef.current;
+      if (!cc) return;
+      const p = canvasCoordsClient(ev.clientX, ev.clientY, cc);
+      paintSegment(p.x, p.y, ev.pressure || 0.5);
+    };
+
+    const end = (ev: PointerEvent) => {
+      if (strokePointerIdRef.current !== ev.pointerId) return;
+      document.removeEventListener("pointermove", move);
+      document.removeEventListener("pointerup", end);
+      document.removeEventListener("pointercancel", end);
+      removeDocPointerRef.current = null;
+      strokePointerIdRef.current = null;
+      try {
+        if (c.hasPointerCapture?.(ev.pointerId)) c.releasePointerCapture(ev.pointerId);
+      } catch {
+        /* ignore */
+      }
+      commitStrokeIfAny();
+    };
+
+    document.addEventListener("pointermove", move);
+    document.addEventListener("pointerup", end);
+    document.addEventListener("pointercancel", end);
+    removeDocPointerRef.current = () => {
+      document.removeEventListener("pointermove", move);
+      document.removeEventListener("pointerup", end);
+      document.removeEventListener("pointercancel", end);
+    };
   };
+
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (phase !== "draw" || !el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (passingRef.current) return;
+      if (e.touches.length !== 1) return;
+      e.preventDefault();
+      detachDocPointer();
+      lockTouchGestureRef.current = true;
+
+      const t = e.touches[0];
+      const tid = t.identifier;
+      strokePointerIdRef.current = tid;
+
+      const { x, y } = canvasCoordsClient(t.clientX, t.clientY, el);
+      currentRef.current = [{ x, y, t: Date.now() }];
+
+      const move = (ev: TouchEvent) => {
+        const touch = Array.from(ev.touches).find((u) => u.identifier === tid);
+        if (!touch) return;
+        ev.preventDefault();
+        const p = canvasCoordsClient(touch.clientX, touch.clientY, el);
+        paintSegment(p.x, p.y, 0.5);
+      };
+
+      const finish = (ev: TouchEvent) => {
+        if (!Array.from(ev.changedTouches).some((u) => u.identifier === tid)) return;
+        ev.preventDefault();
+        document.removeEventListener("touchmove", move);
+        document.removeEventListener("touchend", finish);
+        document.removeEventListener("touchcancel", finish);
+        removeDocTouchRef.current = null;
+        strokePointerIdRef.current = null;
+        lockTouchGestureRef.current = false;
+        commitStrokeIfAny();
+      };
+
+      document.addEventListener("touchmove", move, { passive: false });
+      document.addEventListener("touchend", finish, { passive: false });
+      document.addEventListener("touchcancel", finish, { passive: false });
+      removeDocTouchRef.current = () => {
+        document.removeEventListener("touchmove", move);
+        document.removeEventListener("touchend", finish);
+        document.removeEventListener("touchcancel", finish);
+      };
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      detachDocTouch();
+    };
+  }, [phase, paintSegment, commitStrokeIfAny, detachDocPointer, detachDocTouch]);
 
   const cycleHue = () => {
     const nh = nextHue(hueRef.current, 42);
@@ -312,14 +438,8 @@ export function RainbowCaptcha({
             <canvas
               ref={canvasRef}
               className="h-[min(50vh,420px)] w-full touch-none bg-transparent"
+              style={{ touchAction: "none" }}
               onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove}
-              onPointerUp={onPointerUp}
-              onPointerCancel={onPointerUp}
-              onLostPointerCapture={() => {
-                strokePointerIdRef.current = null;
-                currentRef.current = [];
-              }}
             />
             {passing && (
               <motion.div
