@@ -11,6 +11,7 @@ import {
   hueToBand,
   nextHue,
 } from "@/lib/rainbow-detector";
+import { drawRainbowBackground, drawRainbowStrokes } from "@/lib/rainbow-canvas";
 import { useEssayStore } from "@/lib/store";
 import { RainbowGalleryThumb } from "@/components/gate/RainbowGalleryThumb";
 
@@ -69,44 +70,28 @@ export function RainbowCaptcha({
   phaseRef.current = phase;
   passingRef.current = passing;
 
-  const resize = useCallback(() => {
+  /**
+   * iOS WebKit may report 0×0 canvas until layout settles. Input handlers used to
+   * attach in useLayoutEffect before bitmap sync (previously in useEffect), so
+   * strokes drew to a wrong/default buffer. Sync bitmap here + ResizeObserver.
+   */
+  const syncCanvasFromState = useCallback((): boolean => {
     const c = canvasRef.current;
-    if (!c) return;
+    if (!c) return false;
     const dpr = Math.min(window.devicePixelRatio ?? 1, 2);
     const w = c.clientWidth;
     const h = c.clientHeight;
-    c.width = w * dpr;
-    c.height = h * dpr;
+    if (w <= 0 || h <= 0) return false;
+    c.width = Math.max(1, Math.floor(w * dpr));
+    c.height = Math.max(1, Math.floor(h * dpr));
     const ctx = c.getContext("2d");
-    if (ctx) ctx.scale(dpr, dpr);
+    if (!ctx) return false;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+    drawRainbowBackground(ctx, w, h);
+    drawRainbowStrokes(ctx, strokesRef.current, w, h, w, h);
+    return true;
   }, []);
-
-  useEffect(() => {
-    if (phase !== "draw") return;
-    resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
-  }, [resize, phase]);
-
-  const drawBg = useCallback(() => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext("2d");
-    if (!ctx) return;
-    const w = c.clientWidth;
-    const h = c.clientHeight;
-    const g = ctx.createLinearGradient(0, 0, w, h);
-    g.addColorStop(0, "#1a0a2e");
-    g.addColorStop(0.5, "#2d1b4e");
-    g.addColorStop(1, "#0f172a");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w, h);
-  }, []);
-
-  useEffect(() => {
-    if (phase !== "draw") return;
-    drawBg();
-  }, [drawBg, phase]);
 
   const loadGallery = useCallback(async () => {
     setGalleryLoading(true);
@@ -189,7 +174,7 @@ export function RainbowCaptcha({
     lockTouchGestureRef.current = false;
     detachDocPointer();
     detachDocTouch();
-    drawBg();
+    syncCanvasFromState();
   };
 
   const canvasCoordsClient = (clientX: number, clientY: number, c: HTMLCanvasElement) => {
@@ -238,11 +223,35 @@ export function RainbowCaptcha({
     const canvas = canvasRef.current;
     if (!surface || !canvas) return;
 
+    let ro: ResizeObserver | null = null;
+    let rafBoot = 0;
+
+    const bootSync = () => {
+      if (syncCanvasFromState()) return;
+      if (rafBoot < 24) {
+        rafBoot += 1;
+        requestAnimationFrame(bootSync);
+      }
+    };
+    bootSync();
+
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => {
+        if (phaseRef.current === "draw") syncCanvasFromState();
+      });
+      ro.observe(canvas);
+    }
+
+    const eventOnSurface = (e: Event) => {
+      const path = typeof e.composedPath === "function" ? e.composedPath() : [];
+      return path.includes(surface) || surface.contains(e.target as Node);
+    };
+
     const onPointerDownNative = (e: PointerEvent) => {
       if (passingRef.current) return;
       if (!e.isPrimary) return;
       if (e.pointerType === "touch" && lockTouchGestureRef.current) return;
-      if (!surface.contains(e.target as Node)) return;
+      if (!eventOnSurface(e)) return;
 
       detachDocPointer();
 
@@ -268,9 +277,9 @@ export function RainbowCaptcha({
 
       const end = (ev: PointerEvent) => {
         if (strokePointerIdRef.current !== ev.pointerId) return;
-        document.removeEventListener("pointermove", move);
-        document.removeEventListener("pointerup", end);
-        document.removeEventListener("pointercancel", end);
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", end);
+        window.removeEventListener("pointercancel", end);
         removeDocPointerRef.current = null;
         strokePointerIdRef.current = null;
         try {
@@ -282,20 +291,20 @@ export function RainbowCaptcha({
         commitStrokeIfAny();
       };
 
-      document.addEventListener("pointermove", move);
-      document.addEventListener("pointerup", end);
-      document.addEventListener("pointercancel", end);
+      window.addEventListener("pointermove", move, { passive: false });
+      window.addEventListener("pointerup", end);
+      window.addEventListener("pointercancel", end);
       removeDocPointerRef.current = () => {
-        document.removeEventListener("pointermove", move);
-        document.removeEventListener("pointerup", end);
-        document.removeEventListener("pointercancel", end);
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", end);
+        window.removeEventListener("pointercancel", end);
       };
     };
 
     const onTouchStartNative = (e: TouchEvent) => {
       if (passingRef.current) return;
       if (e.touches.length !== 1) return;
-      if (!surface.contains(e.target as Node)) return;
+      if (!eventOnSurface(e)) return;
       e.preventDefault();
       detachDocPointer();
       lockTouchGestureRef.current = true;
@@ -318,22 +327,22 @@ export function RainbowCaptcha({
       const finish = (ev: TouchEvent) => {
         if (!Array.from(ev.changedTouches).some((u) => u.identifier === tid)) return;
         ev.preventDefault();
-        document.removeEventListener("touchmove", move);
-        document.removeEventListener("touchend", finish);
-        document.removeEventListener("touchcancel", finish);
+        window.removeEventListener("touchmove", move);
+        window.removeEventListener("touchend", finish);
+        window.removeEventListener("touchcancel", finish);
         removeDocTouchRef.current = null;
         strokePointerIdRef.current = null;
         lockTouchGestureRef.current = false;
         commitStrokeIfAny();
       };
 
-      document.addEventListener("touchmove", move, { passive: false });
-      document.addEventListener("touchend", finish, { passive: false });
-      document.addEventListener("touchcancel", finish, { passive: false });
+      window.addEventListener("touchmove", move, { passive: false });
+      window.addEventListener("touchend", finish, { passive: false });
+      window.addEventListener("touchcancel", finish, { passive: false });
       removeDocTouchRef.current = () => {
-        document.removeEventListener("touchmove", move);
-        document.removeEventListener("touchend", finish);
-        document.removeEventListener("touchcancel", finish);
+        window.removeEventListener("touchmove", move);
+        window.removeEventListener("touchend", finish);
+        window.removeEventListener("touchcancel", finish);
       };
     };
 
@@ -345,13 +354,14 @@ export function RainbowCaptcha({
     });
 
     return () => {
+      ro?.disconnect();
       surface.removeEventListener("pointerdown", onPointerDownNative, cap);
       surface.removeEventListener("touchstart", onTouchStartNative, cap);
       detachDocPointer();
       detachDocTouch();
       lockTouchGestureRef.current = false;
     };
-  }, [phase, paintSegment, commitStrokeIfAny, detachDocPointer, detachDocTouch]);
+  }, [phase, syncCanvasFromState, paintSegment, commitStrokeIfAny, detachDocPointer, detachDocTouch]);
 
   const cycleHue = () => {
     const nh = nextHue(hueRef.current, 42);
