@@ -86,6 +86,12 @@ In Safari: Settings &rarr; Safari &rarr; Advanced &rarr; JavaScript &rarr; On.
     typeof ResizeObserver!=="undefined"?"available":"NOT available");
   add("structuredClone",typeof structuredClone!=="undefined"?"pass":"warn",
     typeof structuredClone!=="undefined"?"available":"NOT available (iOS <15.4)");
+  add("Object.hasOwn",typeof Object.hasOwn==="function"?"pass":"fail",
+    typeof Object.hasOwn==="function"?"available":"NOT available — Next.js router WILL crash");
+
+  try{localStorage.setItem("__dbg","1");localStorage.removeItem("__dbg");
+    add("localStorage","pass","read/write OK")}catch(e){add("localStorage","fail",e.message)}
+
   add("devicePixelRatio","pass",String(window.devicePixelRatio));
   add("Screen","pass",screen.width+"x"+screen.height+" viewport "+window.innerWidth+"x"+window.innerHeight);
 

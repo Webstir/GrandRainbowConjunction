@@ -46,9 +46,13 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
 (function(){
-  /* structuredClone polyfill — Next 16 client router uses it directly */
+  /* Polyfills for Safari 15.4 APIs that Next 16 uses in its client router.
+     DDG's WKWebView on iOS 16.1 may not expose these despite the OS version. */
   if(typeof structuredClone==="undefined"){
     structuredClone=function(v){return JSON.parse(JSON.stringify(v))};
+  }
+  if(typeof Object.hasOwn==="undefined"){
+    Object.hasOwn=function(o,p){return Object.prototype.hasOwnProperty.call(o,p)};
   }
   /* Early error trap: catches parse/runtime errors before React mounts */
   window.__earlyErrors=[];
