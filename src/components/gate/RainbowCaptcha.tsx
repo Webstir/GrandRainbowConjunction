@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -39,6 +39,8 @@ export function RainbowCaptcha({
   const router = useRouter();
   const setGateCleared = useEssayStore((s) => s.setGateCleared);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  /** Draw surface: native listeners attach here (capture) so iOS WebKit / DDG always see input. */
+  const drawSurfaceRef = useRef<HTMLDivElement>(null);
   const strokesRef = useRef<Stroke[]>([]);
   const currentRef = useRef<StrokePoint[]>([]);
   /** Active stroke: pointer id, or touch-only path uses a sentinel. */
@@ -225,68 +227,75 @@ export function RainbowCaptcha({
     currentRef.current = [];
   }, []);
 
-  const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (phase !== "draw" || passing) return;
-    if (!e.isPrimary) return;
-    if (e.pointerType === "touch" && lockTouchGestureRef.current) return;
-
-    const c = canvasRef.current;
-    if (!c) return;
-
-    detachDocPointer();
-
-    strokePointerIdRef.current = e.pointerId;
-    try {
-      c.setPointerCapture(e.pointerId);
-    } catch {
-      /* Some WebKit builds reject capture for certain pointer types */
+  useLayoutEffect(() => {
+    if (phase !== "draw") {
+      detachDocPointer();
+      detachDocTouch();
+      return;
     }
 
-    const { x, y } = canvasCoordsClient(e.clientX, e.clientY, c);
-    currentRef.current = [{ x, y, t: Date.now() }];
+    const surface = drawSurfaceRef.current;
+    const canvas = canvasRef.current;
+    if (!surface || !canvas) return;
 
-    const move = (ev: PointerEvent) => {
-      if (!ev.isPrimary) return;
-      if (strokePointerIdRef.current !== ev.pointerId) return;
-      if (phaseRef.current !== "draw" || passingRef.current) return;
-      const cc = canvasRef.current;
-      if (!cc) return;
-      const p = canvasCoordsClient(ev.clientX, ev.clientY, cc);
-      paintSegment(p.x, p.y, ev.pressure || 0.5);
-    };
+    const onPointerDownNative = (e: PointerEvent) => {
+      if (passingRef.current) return;
+      if (!e.isPrimary) return;
+      if (e.pointerType === "touch" && lockTouchGestureRef.current) return;
+      if (!surface.contains(e.target as Node)) return;
 
-    const end = (ev: PointerEvent) => {
-      if (strokePointerIdRef.current !== ev.pointerId) return;
-      document.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerup", end);
-      document.removeEventListener("pointercancel", end);
-      removeDocPointerRef.current = null;
-      strokePointerIdRef.current = null;
+      detachDocPointer();
+
+      strokePointerIdRef.current = e.pointerId;
       try {
-        if (c.hasPointerCapture?.(ev.pointerId)) c.releasePointerCapture(ev.pointerId);
+        canvas.setPointerCapture(e.pointerId);
       } catch {
-        /* ignore */
+        /* Some WebKit builds reject capture for certain pointer types */
       }
-      commitStrokeIfAny();
+
+      const { x, y } = canvasCoordsClient(e.clientX, e.clientY, canvas);
+      currentRef.current = [{ x, y, t: Date.now() }];
+
+      const move = (ev: PointerEvent) => {
+        if (!ev.isPrimary) return;
+        if (strokePointerIdRef.current !== ev.pointerId) return;
+        if (phaseRef.current !== "draw" || passingRef.current) return;
+        const cc = canvasRef.current;
+        if (!cc) return;
+        const p = canvasCoordsClient(ev.clientX, ev.clientY, cc);
+        paintSegment(p.x, p.y, ev.pressure || 0.5);
+      };
+
+      const end = (ev: PointerEvent) => {
+        if (strokePointerIdRef.current !== ev.pointerId) return;
+        document.removeEventListener("pointermove", move);
+        document.removeEventListener("pointerup", end);
+        document.removeEventListener("pointercancel", end);
+        removeDocPointerRef.current = null;
+        strokePointerIdRef.current = null;
+        try {
+          if (canvas.hasPointerCapture?.(ev.pointerId))
+            canvas.releasePointerCapture(ev.pointerId);
+        } catch {
+          /* ignore */
+        }
+        commitStrokeIfAny();
+      };
+
+      document.addEventListener("pointermove", move);
+      document.addEventListener("pointerup", end);
+      document.addEventListener("pointercancel", end);
+      removeDocPointerRef.current = () => {
+        document.removeEventListener("pointermove", move);
+        document.removeEventListener("pointerup", end);
+        document.removeEventListener("pointercancel", end);
+      };
     };
 
-    document.addEventListener("pointermove", move);
-    document.addEventListener("pointerup", end);
-    document.addEventListener("pointercancel", end);
-    removeDocPointerRef.current = () => {
-      document.removeEventListener("pointermove", move);
-      document.removeEventListener("pointerup", end);
-      document.removeEventListener("pointercancel", end);
-    };
-  };
-
-  useEffect(() => {
-    const el = canvasRef.current;
-    if (phase !== "draw" || !el) return;
-
-    const onTouchStart = (e: TouchEvent) => {
+    const onTouchStartNative = (e: TouchEvent) => {
       if (passingRef.current) return;
       if (e.touches.length !== 1) return;
+      if (!surface.contains(e.target as Node)) return;
       e.preventDefault();
       detachDocPointer();
       lockTouchGestureRef.current = true;
@@ -295,14 +304,14 @@ export function RainbowCaptcha({
       const tid = t.identifier;
       strokePointerIdRef.current = tid;
 
-      const { x, y } = canvasCoordsClient(t.clientX, t.clientY, el);
+      const { x, y } = canvasCoordsClient(t.clientX, t.clientY, canvas);
       currentRef.current = [{ x, y, t: Date.now() }];
 
       const move = (ev: TouchEvent) => {
         const touch = Array.from(ev.touches).find((u) => u.identifier === tid);
         if (!touch) return;
         ev.preventDefault();
-        const p = canvasCoordsClient(touch.clientX, touch.clientY, el);
+        const p = canvasCoordsClient(touch.clientX, touch.clientY, canvas);
         paintSegment(p.x, p.y, 0.5);
       };
 
@@ -328,10 +337,19 @@ export function RainbowCaptcha({
       };
     };
 
-    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    const cap = { capture: true };
+    surface.addEventListener("pointerdown", onPointerDownNative, cap);
+    surface.addEventListener("touchstart", onTouchStartNative, {
+      capture: true,
+      passive: false,
+    });
+
     return () => {
-      el.removeEventListener("touchstart", onTouchStart);
+      surface.removeEventListener("pointerdown", onPointerDownNative, cap);
+      surface.removeEventListener("touchstart", onTouchStartNative, cap);
+      detachDocPointer();
       detachDocTouch();
+      lockTouchGestureRef.current = false;
     };
   }, [phase, paintSegment, commitStrokeIfAny, detachDocPointer, detachDocTouch]);
 
@@ -431,15 +449,16 @@ export function RainbowCaptcha({
       {phase !== "browse" && (
         <>
           <div
-            className={`relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 shadow-2xl ${
+            ref={drawSurfaceRef}
+            className={`relative z-10 isolate w-full max-w-lg touch-none overflow-hidden rounded-3xl border border-white/10 shadow-2xl select-none [-webkit-tap-highlight-color:transparent] ${
               phase === "share" ? "pointer-events-none" : ""
             }`}
+            style={{ touchAction: "none" }}
           >
             <canvas
               ref={canvasRef}
-              className="h-[min(50vh,420px)] w-full touch-none bg-transparent"
+              className="block h-[min(50vh,420px)] w-full max-w-full touch-none bg-transparent"
               style={{ touchAction: "none" }}
-              onPointerDown={onPointerDown}
             />
             {passing && (
               <motion.div
