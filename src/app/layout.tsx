@@ -41,11 +41,29 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* structuredClone polyfill — Next 16's client router uses it but
-            DuckDuckGo on iOS 16.1 (WKWebView) doesn't expose it. */}
+        {/* Polyfills + early error trap — runs before any Next.js bundle. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `if(typeof structuredClone==="undefined"){structuredClone=function(v){return JSON.parse(JSON.stringify(v))}}`,
+            __html: `
+(function(){
+  /* structuredClone polyfill — Next 16 client router uses it directly */
+  if(typeof structuredClone==="undefined"){
+    structuredClone=function(v){return JSON.parse(JSON.stringify(v))};
+  }
+  /* Early error trap: catches parse/runtime errors before React mounts */
+  window.__earlyErrors=[];
+  window.onerror=function(msg,src,line,col,err){
+    window.__earlyErrors.push({msg:msg,src:src,line:line,col:col,stack:err&&err.stack});
+    var d=document.getElementById("__early-err");
+    if(!d){d=document.createElement("div");d.id="__early-err";d.style.cssText="position:fixed;top:0;left:0;right:0;background:#7f1d1d;color:#fecaca;padding:1rem;font:12px monospace;z-index:99999;white-space:pre-wrap;word-break:break-all;max-height:50vh;overflow:auto";document.body&&document.body.appendChild(d)}
+    d.textContent+="JS ERROR: "+msg+"\\n  "+src+":"+line+"\\n"+(err&&err.stack||"")+"\\n\\n";
+    return false;
+  };
+  window.onunhandledrejection=function(e){
+    window.onerror&&window.onerror("Unhandled promise rejection: "+(e.reason&&e.reason.message||e.reason),"promise",0,0,e.reason);
+  };
+})();
+            `.trim(),
           }}
         />
       </head>

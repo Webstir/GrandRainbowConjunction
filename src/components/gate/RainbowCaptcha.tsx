@@ -467,8 +467,8 @@ export function RainbowCaptcha({
           >
             <canvas
               ref={canvasRef}
-              className="block h-[min(50vh,420px)] w-full max-w-full touch-none bg-transparent"
-              style={{ touchAction: "none" }}
+              className="block w-full max-w-full touch-none bg-transparent"
+              style={{ touchAction: "none", height: "min(50vh, 420px)", display: "block" }}
             />
             {passing && (
               <motion.div
