@@ -92,7 +92,7 @@ export function looksLikeRainbow(strokes: Stroke[]): {
 }
 
 export function colorFromHue(h: number): string {
-  return `hsl(${h % 360} 85% 55%)`;
+  return `hsl(${h % 360}, 85%, 55%)`;
 }
 
 export function nextHue(current: number, step: number): number {

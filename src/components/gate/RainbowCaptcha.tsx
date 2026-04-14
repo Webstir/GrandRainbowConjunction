@@ -125,7 +125,7 @@ export function RainbowCaptcha({
       const c = canvasRef.current;
       const w = c?.clientWidth ?? 400;
       const h = c?.clientHeight ?? 420;
-      const snap = structuredClone(strokesRef.current) as Stroke[];
+      const snap = JSON.parse(JSON.stringify(strokesRef.current)) as Stroke[];
       setMySnapshot({ strokes: snap, w, h });
       setPassing(true);
       window.setTimeout(() => {
@@ -190,7 +190,7 @@ export function RainbowCaptcha({
     if (!ctx) return;
     const prev = currentRef.current[currentRef.current.length - 1];
     currentRef.current.push({ x, y, t: Date.now(), hue: hueRef.current });
-    ctx.strokeStyle = `hsl(${hueRef.current} 90% 60%)`;
+    ctx.strokeStyle = `hsl(${hueRef.current}, 90%, 60%)`;
     ctx.lineWidth = Math.max(2, 2 + (pressure || 0.5) * 6);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";

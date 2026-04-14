@@ -35,7 +35,7 @@ export function drawRainbowStrokes(
       const a = pts[i - 1];
       const b = pts[i];
       const hue = pointHue(b);
-      ctx.strokeStyle = `hsl(${hue} 90% 60%)`;
+      ctx.strokeStyle = `hsl(${hue}, 90%, 60%)`;
       ctx.lineWidth = Math.max(1.5, 2 * Math.min(sx, sy));
       ctx.lineCap = "round";
       ctx.lineJoin = "round";

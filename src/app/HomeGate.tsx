@@ -1,9 +1,39 @@
 "use client";
 
-import { useEffect } from "react";
+import { Component, type ReactNode, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { RainbowCaptcha } from "@/components/gate/RainbowCaptcha";
 import { useEssayStore } from "@/lib/store";
+
+class GateBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
+  state: { error: Error | null } = { error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ background: "#0c0618", color: "#fca5a5", padding: "2rem", minHeight: "100vh", fontFamily: "system-ui" }}>
+          <h1 style={{ fontSize: "1.25rem", color: "#fff" }}>Rainbow gate error</h1>
+          <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-all", fontSize: "0.8rem", marginTop: "1rem" }}>
+            {this.state.error.message}
+            {"\n\n"}
+            {this.state.error.stack}
+          </pre>
+          <p style={{ marginTop: "1rem", color: "#a5b4fc", fontSize: "0.85rem" }}>
+            Screenshot this and send it — or visit <code>/debug</code> for full diagnostics.
+          </p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export function HomeGate() {
   const router = useRouter();
@@ -25,5 +55,9 @@ export function HomeGate() {
     );
   }
 
-  return <RainbowCaptcha />;
+  return (
+    <GateBoundary>
+      <RainbowCaptcha />
+    </GateBoundary>
+  );
 }
