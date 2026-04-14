@@ -40,6 +40,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* structuredClone polyfill — Next 16's client router uses it but
+            DuckDuckGo on iOS 16.1 (WKWebView) doesn't expose it. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if(typeof structuredClone==="undefined"){structuredClone=function(v){return JSON.parse(JSON.stringify(v))}}`,
+          }}
+        />
+      </head>
       <body
         className={`${display.variable} ${body.variable} ${pixel.variable} min-h-screen font-body antialiased`}
       >

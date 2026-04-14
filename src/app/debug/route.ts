@@ -85,7 +85,7 @@ In Safari: Settings &rarr; Safari &rarr; Advanced &rarr; JavaScript &rarr; On.
   add("ResizeObserver",typeof ResizeObserver!=="undefined"?"pass":"warn",
     typeof ResizeObserver!=="undefined"?"available":"NOT available");
   add("structuredClone",typeof structuredClone!=="undefined"?"pass":"warn",
-    typeof structuredClone!=="undefined"?"NOT available (iOS <15.4)":"available");
+    typeof structuredClone!=="undefined"?"available":"NOT available (iOS <15.4)");
   add("devicePixelRatio","pass",String(window.devicePixelRatio));
   add("Screen","pass",screen.width+"x"+screen.height+" viewport "+window.innerWidth+"x"+window.innerHeight);
 
