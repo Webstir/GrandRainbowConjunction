@@ -20,14 +20,21 @@ export function RainbowGalleryThumb({
   className = "",
 }: Props) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const figureRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const c = ref.current;
     if (!c) return;
     const paint = () => {
       const dpr = Math.min(window.devicePixelRatio ?? 1, 2);
-      const w = c.clientWidth;
-      const h = c.clientHeight;
+      let w = c.clientWidth;
+      let h = c.clientHeight;
+      if (w < 2 || h < 2) {
+        c.width = 1;
+        c.height = 1;
+        w = c.clientWidth;
+        h = c.clientHeight;
+      }
       if (w < 2 || h < 2) return;
       c.width = w * dpr;
       c.height = h * dpr;
@@ -38,13 +45,18 @@ export function RainbowGalleryThumb({
       drawRainbowStrokes(ctx, strokes, canvasW, canvasH, w, h);
     };
     paint();
-    const ro = new ResizeObserver(paint);
-    ro.observe(c);
-    return () => ro.disconnect();
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(paint);
+      const observeEl = figureRef.current ?? c;
+      ro.observe(observeEl);
+    }
+    return () => ro?.disconnect();
   }, [strokes, canvasW, canvasH]);
 
   return (
     <figure
+      ref={figureRef}
       className={`overflow-hidden rounded-2xl border border-white/10 bg-black/20 ${className}`}
     >
       <canvas ref={ref} className="aspect-[5/4] w-full touch-none" />

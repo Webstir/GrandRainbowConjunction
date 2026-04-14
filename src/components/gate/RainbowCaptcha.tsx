@@ -79,8 +79,15 @@ export function RainbowCaptcha({
     const c = canvasRef.current;
     if (!c) return false;
     const dpr = Math.min(window.devicePixelRatio ?? 1, 2);
-    const w = c.clientWidth;
-    const h = c.clientHeight;
+    let w = c.clientWidth;
+    let h = c.clientHeight;
+    /** Some WebKit builds keep 300×150 intrinsic size in the layout loop; shrinking the bitmap forces a real measure. */
+    if (w <= 0 || h <= 0) {
+      c.width = 1;
+      c.height = 1;
+      w = c.clientWidth;
+      h = c.clientHeight;
+    }
     if (w <= 0 || h <= 0) return false;
     c.width = Math.max(1, Math.floor(w * dpr));
     c.height = Math.max(1, Math.floor(h * dpr));
@@ -228,19 +235,26 @@ export function RainbowCaptcha({
 
     const bootSync = () => {
       if (syncCanvasFromState()) return;
-      if (rafBoot < 24) {
+      if (rafBoot < 64) {
         rafBoot += 1;
         requestAnimationFrame(bootSync);
       }
     };
     bootSync();
 
+    /** Observe the draw surface, not the canvas: WebKit/iOS can fail to deliver ResizeObserver for <canvas> (see webkit #269911). */
     if (typeof ResizeObserver !== "undefined") {
       ro = new ResizeObserver(() => {
         if (phaseRef.current === "draw") syncCanvasFromState();
       });
-      ro.observe(canvas);
+      ro.observe(surface);
     }
+
+    const onViewportResize = () => {
+      if (phaseRef.current === "draw") syncCanvasFromState();
+    };
+    window.addEventListener("resize", onViewportResize);
+    window.visualViewport?.addEventListener("resize", onViewportResize);
 
     const eventOnSurface = (e: Event) => {
       const path = typeof e.composedPath === "function" ? e.composedPath() : [];
@@ -355,6 +369,8 @@ export function RainbowCaptcha({
 
     return () => {
       ro?.disconnect();
+      window.removeEventListener("resize", onViewportResize);
+      window.visualViewport?.removeEventListener("resize", onViewportResize);
       surface.removeEventListener("pointerdown", onPointerDownNative, cap);
       surface.removeEventListener("touchstart", onTouchStartNative, cap);
       detachDocPointer();
