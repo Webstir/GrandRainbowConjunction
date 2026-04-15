@@ -47,7 +47,7 @@ export function ChapterChrome({
                 Subscribe
               </Link>
               <Link
-                href="/faqs#faqs"
+                href="/faqs"
                 className="min-w-0 text-violet-300/95 hover:text-violet-200"
               >
                 FAQs

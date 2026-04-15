@@ -207,7 +207,7 @@ export function TapReader({
         {atLastBeat && trunkChapterId === "05-fifth" && (
           <div className="mx-auto mt-6 max-w-160 px-4 text-center">
             <Link
-              href="/faqs#faqs"
+              href="/faqs"
               className="inline-block rounded-full border border-(--chapter-accent) px-6 py-2 text-sm font-medium text-(--chapter-accent) hover:bg-(--chapter-accent)/10"
               onClick={(e) => e.stopPropagation()}
               onPointerDown={(e) => e.stopPropagation()}

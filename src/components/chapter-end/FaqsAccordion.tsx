@@ -118,8 +118,7 @@ const FAQS: FaqItem[] = [
 export function FaqsAccordion() {
   return (
     <section
-      id="faqs"
-      className="scroll-mt-28 not-prose my-10"
+      className="not-prose my-10"
       onClick={(e) => e.stopPropagation()}
     >
       <aside className="rounded-2xl border border-violet-400/35 bg-linear-to-b from-violet-950/55 via-purple-950/45 to-indigo-950/50 px-5 py-8 shadow-lg shadow-violet-950/30 ring-1 ring-violet-300/10 sm:px-8 sm:py-10">
