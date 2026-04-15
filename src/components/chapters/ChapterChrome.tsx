@@ -48,7 +48,7 @@ export function ChapterChrome({
               </Link>
               <Link
                 href="/faqs"
-                className="min-w-0 text-violet-300/95 hover:text-violet-200"
+                className="min-w-0 hover:text-(--chapter-accent)"
               >
                 FAQs
               </Link>

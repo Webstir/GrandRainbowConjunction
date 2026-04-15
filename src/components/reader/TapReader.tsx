@@ -208,7 +208,7 @@ export function TapReader({
           <div className="mx-auto mt-6 max-w-160 px-4 text-center">
             <Link
               href="/faqs"
-              className="inline-block rounded-full border border-(--chapter-accent) px-6 py-2 text-sm font-medium text-(--chapter-accent) hover:bg-(--chapter-accent)/10"
+              className="inline-block rounded-full border border-violet-400/70 px-6 py-2 text-sm font-medium text-violet-200 hover:bg-violet-500/15"
               onClick={(e) => e.stopPropagation()}
               onPointerDown={(e) => e.stopPropagation()}
             >
