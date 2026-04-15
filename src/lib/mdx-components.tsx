@@ -6,6 +6,7 @@ import { ReflectionQuestion } from "@/components/chapter-end/ReflectionQuestion"
 import { CommunityAnswers } from "@/components/chapter-end/CommunityAnswers";
 import { HighScoreInitials } from "@/components/chapter-end/HighScoreInitials";
 import { SynthSection } from "@/components/chapter-end/SynthSection";
+import { FaqsAccordion } from "@/components/chapter-end/FaqsAccordion";
 
 /** `trunkChapterId` = URL segment (e.g. 01-intro). `contentId` = MDX slug for answers (includes branch file names). */
 export function getMdxComponents(
@@ -13,6 +14,7 @@ export function getMdxComponents(
   contentId: string
 ): MDXComponents {
   return {
+    FaqsAccordion,
     BranchPoint: (props) => (
       <BranchPoint chapterId={trunkChapterId} {...props} />
     ),
