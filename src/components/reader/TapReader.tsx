@@ -63,18 +63,10 @@ export function TapReader({
     advance();
   }, [advance]);
 
-  /**
-   * Each time you open this chapter (including from another), start at tap 0 —
-   * unless the URL hash is #faqs on chapter 5, in which case jump to the FAQ
-   * block at the final tap step.
-   */
+  /** Each time you open this chapter (including from another), start at tap 0. */
   useLayoutEffect(() => {
-    const hash =
-      typeof window !== "undefined" ? window.location.hash.slice(1) : "";
-    const jumpToFaqs =
-      hash === "faqs" && chapterId === "05-fifth" && total > 0;
-    setChapterProgress(chapterId, jumpToFaqs ? total - 1 : 0);
-  }, [chapterId, setChapterProgress, total]);
+    setChapterProgress(chapterId, 0);
+  }, [chapterId, setChapterProgress]);
 
   useEffect(() => {
     if (rawIndex !== activeIndex) {
@@ -215,7 +207,7 @@ export function TapReader({
         {atLastBeat && trunkChapterId === "05-fifth" && (
           <div className="mx-auto mt-6 max-w-160 px-4 text-center">
             <Link
-              href="/chapters/05-fifth#faqs"
+              href="/faqs#faqs"
               className="inline-block rounded-full border border-(--chapter-accent) px-6 py-2 text-sm font-medium text-(--chapter-accent) hover:bg-(--chapter-accent)/10"
               onClick={(e) => e.stopPropagation()}
               onPointerDown={(e) => e.stopPropagation()}
