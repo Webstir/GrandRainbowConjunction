@@ -212,6 +212,18 @@ export function TapReader({
             </Link>
           </div>
         )}
+        {atLastBeat && trunkChapterId === "05-fifth" && (
+          <div className="mx-auto mt-6 max-w-160 px-4 text-center">
+            <Link
+              href="/chapters/05-fifth#faqs"
+              className="inline-block rounded-full border border-(--chapter-accent) px-6 py-2 text-sm font-medium text-(--chapter-accent) hover:bg-(--chapter-accent)/10"
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              FAQs
+            </Link>
+          </div>
+        )}
         <motion.p
           className="mx-auto mt-6 max-w-160 px-4 text-center text-sm text-(--chapter-muted-fg)"
           initial={{ opacity: 0 }}
