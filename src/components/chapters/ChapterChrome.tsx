@@ -23,7 +23,7 @@ export function ChapterChrome({
               {title}
             </p>
             <nav
-              className="grid grid-cols-3 gap-2 text-center text-xs text-(--chapter-muted-fg) sm:text-sm"
+              className="grid grid-cols-2 gap-2 text-center text-xs text-(--chapter-muted-fg) sm:grid-cols-4 sm:text-sm"
               aria-label="Chapter utilities"
             >
               <Link
@@ -45,6 +45,12 @@ export function ChapterChrome({
                 className="min-w-0 hover:text-(--chapter-accent)"
               >
                 Subscribe
+              </Link>
+              <Link
+                href="/chapters/05-fifth#faqs"
+                className="min-w-0 text-violet-300/95 hover:text-violet-200"
+              >
+                FAQs
               </Link>
             </nav>
           </div>

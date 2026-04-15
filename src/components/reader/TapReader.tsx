@@ -63,10 +63,18 @@ export function TapReader({
     advance();
   }, [advance]);
 
-  /** Each time you open this chapter (including from another), start at tap 0. */
+  /**
+   * Each time you open this chapter (including from another), start at tap 0 —
+   * unless the URL hash is #faqs on chapter 5, in which case jump to the FAQ
+   * block at the final tap step.
+   */
   useLayoutEffect(() => {
-    setChapterProgress(chapterId, 0);
-  }, [chapterId, setChapterProgress]);
+    const hash =
+      typeof window !== "undefined" ? window.location.hash.slice(1) : "";
+    const jumpToFaqs =
+      hash === "faqs" && chapterId === "05-fifth" && total > 0;
+    setChapterProgress(chapterId, jumpToFaqs ? total - 1 : 0);
+  }, [chapterId, setChapterProgress, total]);
 
   useEffect(() => {
     if (rawIndex !== activeIndex) {

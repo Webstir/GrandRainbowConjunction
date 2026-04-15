@@ -117,47 +117,52 @@ const FAQS: FaqItem[] = [
 
 export function FaqsAccordion() {
   return (
-    <aside
-      className="not-prose my-10 rounded-2xl border border-(--chapter-muted) bg-(--chapter-card)/60 px-4 py-6 sm:px-6"
+    <section
+      id="faqs"
+      className="scroll-mt-28 not-prose my-10"
       onClick={(e) => e.stopPropagation()}
     >
-      <h3 className="mb-4 font-display text-lg text-(--chapter-accent)">
-        The Homelessness Catch 22: The FAQs
-      </h3>
-      <div className="space-y-2">
-        {FAQS.map((item) => (
-          <details
-            key={item.question}
-            className="group rounded-xl border border-(--chapter-muted)/80 bg-(--background)/40 open:border-(--chapter-accent)/35"
-          >
-            <summary className="cursor-pointer list-none px-4 py-3 font-medium text-(--foreground) marker:content-none [&::-webkit-details-marker]:hidden">
-              <span className="flex items-start justify-between gap-3">
-                <span className="text-pretty pr-2">{item.question}</span>
-                <span
-                  className="mt-0.5 shrink-0 text-(--chapter-muted-fg) transition-transform group-open:rotate-180"
-                  aria-hidden
-                >
-                  ▼
+      <aside className="rounded-2xl border border-violet-400/35 bg-linear-to-b from-violet-950/55 via-purple-950/45 to-indigo-950/50 px-5 py-8 shadow-lg shadow-violet-950/30 ring-1 ring-violet-300/10 sm:px-8 sm:py-10">
+        <h3 className="mb-6 font-display text-2xl leading-tight text-violet-100 sm:text-3xl">
+          The Homelessness Catch 22: The FAQs
+        </h3>
+        <div className="space-y-3">
+          {FAQS.map((item) => (
+            <details
+              key={item.question}
+              className="group rounded-xl border border-violet-500/25 bg-violet-950/35 open:border-violet-400/45 open:bg-violet-950/50"
+            >
+              <summary className="cursor-pointer list-none px-4 py-4 marker:content-none sm:px-5 sm:py-4 [&::-webkit-details-marker]:hidden">
+                <span className="flex items-start justify-between gap-4">
+                  <span className="text-pretty pr-2 text-lg font-medium leading-snug text-violet-50 sm:text-xl">
+                    {item.question}
+                  </span>
+                  <span
+                    className="mt-1 shrink-0 text-violet-400/90 transition-transform group-open:rotate-180"
+                    aria-hidden
+                  >
+                    ▼
+                  </span>
                 </span>
-              </span>
-            </summary>
-            <div className="border-t border-(--chapter-muted)/60 px-4 pb-4 pt-3 text-sm leading-relaxed text-(--chapter-muted-fg) [&_em]:text-(--foreground)/90">
-              {item.paragraphs.map((p, i) => (
-                <p key={i} className={i > 0 ? "mt-3" : undefined}>
-                  {p}
-                </p>
-              ))}
-            </div>
-          </details>
-        ))}
-      </div>
-      <p className="mt-6 border-t border-(--chapter-muted)/60 pt-4 text-sm italic text-(--chapter-muted-fg)">
-        *One of the repeat &quot;preachers&quot; wore a t shirt w
-        &quot;H.N.I.C.&quot; emblazoned on the chest. 😶
-      </p>
-      <p className="mt-3 text-center text-lg" aria-hidden>
-        🌈
-      </p>
-    </aside>
+              </summary>
+              <div className="border-t border-violet-500/25 px-4 pb-5 pt-4 text-base leading-[1.7] text-violet-100/92 sm:px-5 sm:text-lg sm:leading-[1.65] [&_em]:text-violet-50">
+                {item.paragraphs.map((p, i) => (
+                  <p key={i} className={i > 0 ? "mt-4" : undefined}>
+                    {p}
+                  </p>
+                ))}
+              </div>
+            </details>
+          ))}
+        </div>
+        <p className="mt-8 border-t border-violet-500/30 pt-5 text-base italic leading-relaxed text-violet-200/85 sm:text-lg">
+          *One of the repeat &quot;preachers&quot; wore a t shirt w
+          &quot;H.N.I.C.&quot; emblazoned on the chest. 😶
+        </p>
+        <p className="mt-4 text-center text-2xl" aria-hidden>
+          🌈
+        </p>
+      </aside>
+    </section>
   );
 }
