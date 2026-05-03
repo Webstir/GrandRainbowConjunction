@@ -24,10 +24,6 @@ export const chapterMap: Record<string, ChapterMeta> = {
     title: "Homelessness",
     file: "01-intro",
     next: "02-second",
-    branches: {
-      "branch-a": { label: "The red door 🟥", file: "01-intro--branch-a" },
-      "branch-b": { label: "The blue door 🟦", file: "01-intro--branch-b" },
-    },
   },
   "02-second": {
     title: "Family",

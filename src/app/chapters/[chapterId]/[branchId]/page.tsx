@@ -35,7 +35,7 @@ export default async function BranchPage(props: Props) {
   const { slug, entry, contentId } = resolved;
   if (!chapterFileExists(slug)) notFound();
 
-  const comps = getMdxComponents(params.chapterId, contentId);
+  const comps = getMdxComponents(contentId);
   const { frontmatter, paragraphs } = await compileChapterSections(
     slug,
     comps,
