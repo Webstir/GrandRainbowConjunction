@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Literata, Press_Start_2P } from "next/font/google";
 import { GlobalSoundToggle } from "@/components/GlobalSoundToggle";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
 
 const display = Fraunces({

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { chapterOrder, chapterMap } from "@/content/meta";
 import { SignupForm } from "@/components/newsletter/SignupForm";
 import { GOFUNDME_SAVE_RICO_URL } from "@/lib/support";
+import { MobileUtilityNav } from "@/components/chapters/MobileUtilityNav";
 
 export function ChapterChrome({
   chapterId,
@@ -23,7 +24,7 @@ export function ChapterChrome({
               {title}
             </p>
             <nav
-              className="grid grid-cols-2 gap-2 text-center text-xs text-(--chapter-muted-fg) sm:grid-cols-3 sm:text-sm lg:grid-cols-5"
+              className="hidden grid-cols-2 gap-2 text-center text-xs text-(--chapter-muted-fg) lg:grid lg:grid-cols-5 lg:text-sm"
               aria-label="Chapter utilities"
             >
               <Link
@@ -62,7 +63,8 @@ export function ChapterChrome({
           </div>
         </div>
       </header>
-      <main>{children}</main>
+      <main className="pb-24 lg:pb-0">{children}</main>
+      <MobileUtilityNav />
       <footer className="mx-auto max-w-3xl space-y-6 px-4 py-16 text-center">
         <div className="flex flex-wrap justify-center gap-4 text-sm text-(--chapter-muted-fg)">
           {chapterOrder.map((id) => (
