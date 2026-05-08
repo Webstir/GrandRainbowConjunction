@@ -1,7 +1,15 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent,
+} from "react";
 
 type DailyLogPost = {
   id: string;
@@ -295,19 +303,111 @@ const posts: DailyLogPost[] = [
 
 const DAILY_LOG_PROGRESS_KEY = "dailyLogsProgressByPost";
 
+function flattenText(node: React.ReactNode): string | null {
+  if (typeof node === "string") return node;
+  if (typeof node === "number") return String(node);
+  if (node === null || node === undefined || typeof node === "boolean") return "";
+  if (Array.isArray(node)) {
+    const parts: string[] = [];
+    for (const child of node) {
+      const value = flattenText(child);
+      if (value === null) return null;
+      parts.push(value);
+    }
+    return parts.join("");
+  }
+  if (isValidElement(node)) {
+    if (node.type === "br") return " ";
+    return flattenText(node.props.children);
+  }
+  return null;
+}
+
+function splitIntoBeatChunks(text: string): string[] {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (!normalized) return [];
+
+  const chunks: string[] = [];
+  let buffer = "";
+
+  const pushBuffer = () => {
+    const trimmed = buffer.trim();
+    if (trimmed) chunks.push(trimmed);
+    buffer = "";
+  };
+
+  for (let index = 0; index < normalized.length; index += 1) {
+    if (normalized.slice(index, index + 3) === "...") {
+      pushBuffer();
+      chunks.push("...");
+      index += 2;
+      continue;
+    }
+
+    const char = normalized[index];
+    if (char === "." || char === "," || char === "[" || char === "]" || char === "(" || char === ")") {
+      pushBuffer();
+      chunks.push(char);
+      continue;
+    }
+
+    buffer += char;
+  }
+
+  pushBuffer();
+  return chunks;
+}
+
+function expandBeatsToSentenceGranularity(beats: React.ReactNode[]): React.ReactNode[] {
+  const expanded: React.ReactNode[] = [];
+
+  for (const beat of beats) {
+    if (!isValidElement(beat) || beat.type !== "p") {
+      expanded.push(beat);
+      continue;
+    }
+
+    const flattened = flattenText(beat.props.children);
+    if (flattened === null) {
+      expanded.push(beat);
+      continue;
+    }
+
+    const chunks = splitIntoBeatChunks(flattened);
+    if (chunks.length <= 1) {
+      expanded.push(beat);
+      continue;
+    }
+
+    const baseKey = beat.key ?? `beat-${expanded.length}`;
+    for (let index = 0; index < chunks.length; index += 1) {
+      expanded.push(cloneElement(beat, { key: `${String(baseKey)}-s${index}` }, chunks[index]));
+    }
+  }
+
+  return expanded;
+}
+
 export function DailyLogsContent() {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [beatIndex, setBeatIndex] = useState(0);
   const [savedProgress, setSavedProgress] = useState<Record<string, number>>({});
   const touchStart = useRef<{ y: number; x: number } | null>(null);
+  const expandedBeatsByPostId = useMemo(
+    () =>
+      Object.fromEntries(
+        posts.map((post) => [post.id, expandBeatsToSentenceGranularity(post.beats)] as const)
+      ),
+    []
+  );
 
   const selectedPost = useMemo(
     () => posts.find((post) => post.id === selectedPostId) ?? null,
     [selectedPostId]
   );
 
-  const visibleBeats = selectedPost ? selectedPost.beats.slice(0, beatIndex + 1) : [];
-  const totalBeats = selectedPost?.beats.length ?? 0;
+  const activeBeats = selectedPostId ? expandedBeatsByPostId[selectedPostId] ?? [] : [];
+  const totalBeats = activeBeats.length;
   const progress = totalBeats > 0 ? Math.round(((beatIndex + 1) / totalBeats) * 100) : 0;
 
   useEffect(() => {
@@ -332,8 +432,8 @@ export function DailyLogsContent() {
 
   const startPost = (id: string, fromBeat = 0) => {
     setSelectedPostId(id);
-    const targetPost = posts.find((post) => post.id === id);
-    const maxBeat = Math.max(0, (targetPost?.beats.length ?? 1) - 1);
+    const targetBeats = expandedBeatsByPostId[id] ?? [];
+    const maxBeat = Math.max(0, targetBeats.length - 1);
     setBeatIndex(Math.max(0, Math.min(fromBeat, maxBeat)));
   };
 
@@ -343,8 +443,8 @@ export function DailyLogsContent() {
   };
 
   const advance = () => {
-    if (!selectedPost) return;
-    setBeatIndex((prev) => Math.min(prev + 1, selectedPost.beats.length - 1));
+    if (totalBeats === 0) return;
+    setBeatIndex((prev) => Math.min(prev + 1, totalBeats - 1));
   };
 
   const retreat = () => {
@@ -420,7 +520,8 @@ export function DailyLogsContent() {
                 >
                   Start over
                 </button>
-                {savedProgress[post.id] > 0 && savedProgress[post.id] < post.beats.length - 1 && (
+                {savedProgress[post.id] > 0 &&
+                  savedProgress[post.id] < (expandedBeatsByPostId[post.id]?.length ?? 1) - 1 && (
                   <button
                     type="button"
                     onClick={() => startPost(post.id, savedProgress[post.id])}
@@ -476,11 +577,7 @@ export function DailyLogsContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
-            {visibleBeats.map((beat, index) => (
-              <div key={index} className={index === 0 ? "" : "mt-4"}>
-                {beat}
-              </div>
-            ))}
+            {activeBeats[beatIndex] ?? null}
           </motion.div>
         </AnimatePresence>
       </div>
