@@ -29,6 +29,8 @@ type BeatChunk = {
   node: React.ReactNode;
   groupId: string;
   key: string;
+  text?: string;
+  inline?: boolean;
 };
 
 const tiers = [
@@ -343,6 +345,41 @@ function flattenText(node: React.ReactNode): string | null {
 }
 
 function splitIntoBeatChunks(text: string): string[] {
+  const splitInlinePunctuation = (value: string): string[] => {
+    const normalizedValue = value.replace(/\s+/g, " ").trim();
+    if (!normalizedValue) return [];
+
+    const localChunks: string[] = [];
+    let localBuffer = "";
+
+    const pushLocalBuffer = () => {
+      const trimmed = localBuffer.trim();
+      if (trimmed) localChunks.push(trimmed);
+      localBuffer = "";
+    };
+
+    for (let idx = 0; idx < normalizedValue.length; idx += 1) {
+      if (normalizedValue.slice(idx, idx + 3) === "...") {
+        pushLocalBuffer();
+        localChunks.push("...");
+        idx += 2;
+        continue;
+      }
+
+      const ch = normalizedValue[idx];
+      if (ch === "." || ch === "," || ch === "?") {
+        localBuffer += ch;
+        pushLocalBuffer();
+        continue;
+      }
+
+      localBuffer += ch;
+    }
+
+    pushLocalBuffer();
+    return localChunks;
+  };
+
   const normalized = text.replace(/\s+/g, " ").trim();
   if (!normalized) return [];
 
@@ -374,11 +411,24 @@ function splitIntoBeatChunks(text: string): string[] {
         if (normalized[index] === closingChar) break;
         index += 1;
       }
-      chunks.push(grouped.trim());
+      const groupText = grouped.trim();
+      const inner = groupText.slice(1, groupText.endsWith(closingChar) ? -1 : undefined).trim();
+      const innerChunks = splitInlinePunctuation(inner);
+
+      if (innerChunks.length === 0) {
+        chunks.push(groupText);
+        continue;
+      }
+
+      for (let i = 0; i < innerChunks.length; i += 1) {
+        const withOpening = i === 0 ? `${char}${innerChunks[i]}` : innerChunks[i];
+        const withWrapping = i === innerChunks.length - 1 ? `${withOpening}${closingChar}` : withOpening;
+        chunks.push(withWrapping.trim());
+      }
       continue;
     }
 
-    if (char === "." || char === "," || char === "[" || char === "]" || char === "(" || char === ")") {
+    if (char === "." || char === "," || char === "?") {
       buffer += char;
       pushBuffer();
       continue;
@@ -401,28 +451,30 @@ function expandBeatsToSentenceGranularity(beats: React.ReactNode[]): BeatChunk[]
     const tierGroup = baseKey.startsWith("tier-") ? "stewardship-tiers" : baseKey;
 
     if (!isValidElement(beat) || beat.type !== "p") {
-      expanded.push({ node: beat, groupId: tierGroup, key: baseKey });
+      expanded.push({ node: beat, groupId: tierGroup, key: baseKey, inline: false });
       continue;
     }
 
     const paragraph = beat as React.ReactElement<{ children?: React.ReactNode }>;
     const flattened = flattenText(paragraph.props.children);
     if (flattened === null) {
-      expanded.push({ node: beat, groupId: baseKey, key: baseKey });
+      expanded.push({ node: beat, groupId: baseKey, key: baseKey, inline: false });
       continue;
     }
 
     const chunks = splitIntoBeatChunks(flattened);
     if (chunks.length <= 1) {
-      expanded.push({ node: beat, groupId: baseKey, key: baseKey });
+      expanded.push({ node: beat, groupId: baseKey, key: baseKey, inline: false, text: flattened.trim() });
       continue;
     }
 
     for (let index = 0; index < chunks.length; index += 1) {
       expanded.push({
-        node: cloneElement(beat, { key: `${baseKey}-s${index}` }, chunks[index]),
+        node: <span key={`${baseKey}-s${index}`}>{chunks[index]}</span>,
         groupId: baseKey,
         key: `${baseKey}-s${index}`,
+        text: chunks[index],
+        inline: true,
       });
     }
   }
@@ -658,10 +710,30 @@ export function DailyLogsContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="space-y-3">
-              {visibleBeatNodes.map((beat) => (
-                <div key={beat.key}>{beat.node}</div>
-              ))}
+            <div>
+              {visibleBeatNodes.map((beat, index) => {
+                const previous = index > 0 ? visibleBeatNodes[index - 1] : null;
+                const inlineAfterComma = Boolean(
+                  beat.inline &&
+                    previous?.inline &&
+                    typeof previous.text === "string" &&
+                    previous.text.trim().endsWith(",")
+                );
+
+                if (inlineAfterComma) {
+                  return (
+                    <span key={beat.key} className="ml-1">
+                      {beat.node}
+                    </span>
+                  );
+                }
+
+                return (
+                  <div key={beat.key} className={index === 0 ? "" : "mt-3"}>
+                    {beat.node}
+                  </div>
+                );
+              })}
             </div>
           </motion.div>
         </AnimatePresence>
