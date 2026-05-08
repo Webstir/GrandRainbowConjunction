@@ -356,7 +356,15 @@ function splitIntoBeatChunks(text: string): string[] {
     const ch = source[index];
     if (!ch) return false;
     if (ch === "-") return isDashSeparatorAt(source, index);
-    return ch === "." || ch === "," || ch === "?" || ch === ":" || ch === "!" || ch === "\"";
+    return (
+      ch === "." ||
+      ch === "," ||
+      ch === ";" ||
+      ch === "?" ||
+      ch === ":" ||
+      ch === "!" ||
+      ch === "\""
+    );
   };
 
   const splitInlinePunctuation = (value: string): string[] => {
