@@ -25,6 +25,12 @@ type PostTheme = {
   softBorder: string;
 };
 
+type BeatChunk = {
+  node: React.ReactNode;
+  groupId: string;
+  key: string;
+};
+
 const tiers = [
   { usd: "$7", text: "breakfast combo 🍳🥐" },
   { usd: "$10", text: "footlong hotdog and a cheeseburger 🍔🌭" },
@@ -358,6 +364,20 @@ function splitIntoBeatChunks(text: string): string[] {
     }
 
     const char = normalized[index];
+    if (char === "[" || char === "(") {
+      pushBuffer();
+      const closingChar = char === "[" ? "]" : ")";
+      let grouped = char;
+      index += 1;
+      while (index < normalized.length) {
+        grouped += normalized[index];
+        if (normalized[index] === closingChar) break;
+        index += 1;
+      }
+      chunks.push(grouped.trim());
+      continue;
+    }
+
     if (char === "." || char === "," || char === "[" || char === "]" || char === "(" || char === ")") {
       buffer += char;
       pushBuffer();
@@ -371,31 +391,39 @@ function splitIntoBeatChunks(text: string): string[] {
   return chunks;
 }
 
-function expandBeatsToSentenceGranularity(beats: React.ReactNode[]): React.ReactNode[] {
-  const expanded: React.ReactNode[] = [];
+function expandBeatsToSentenceGranularity(beats: React.ReactNode[]): BeatChunk[] {
+  const expanded: BeatChunk[] = [];
 
-  for (const beat of beats) {
+  for (let beatNumber = 0; beatNumber < beats.length; beatNumber += 1) {
+    const beat = beats[beatNumber];
+    const keyFromElement = isValidElement(beat) ? beat.key : null;
+    const baseKey = String(keyFromElement ?? `beat-${beatNumber}`);
+    const tierGroup = baseKey.startsWith("tier-") ? "stewardship-tiers" : baseKey;
+
     if (!isValidElement(beat) || beat.type !== "p") {
-      expanded.push(beat);
+      expanded.push({ node: beat, groupId: tierGroup, key: baseKey });
       continue;
     }
 
     const paragraph = beat as React.ReactElement<{ children?: React.ReactNode }>;
     const flattened = flattenText(paragraph.props.children);
     if (flattened === null) {
-      expanded.push(beat);
+      expanded.push({ node: beat, groupId: baseKey, key: baseKey });
       continue;
     }
 
     const chunks = splitIntoBeatChunks(flattened);
     if (chunks.length <= 1) {
-      expanded.push(beat);
+      expanded.push({ node: beat, groupId: baseKey, key: baseKey });
       continue;
     }
 
-    const baseKey = beat.key ?? `beat-${expanded.length}`;
     for (let index = 0; index < chunks.length; index += 1) {
-      expanded.push(cloneElement(beat, { key: `${String(baseKey)}-s${index}` }, chunks[index]));
+      expanded.push({
+        node: cloneElement(beat, { key: `${baseKey}-s${index}` }, chunks[index]),
+        groupId: baseKey,
+        key: `${baseKey}-s${index}`,
+      });
     }
   }
 
@@ -428,6 +456,18 @@ export function DailyLogsContent() {
   const activeBeats = selectedPostId ? expandedBeatsByPostId[selectedPostId] ?? [] : [];
   const totalBeats = activeBeats.length;
   const progress = totalBeats > 0 ? Math.round(((beatIndex + 1) / totalBeats) * 100) : 0;
+  const visibleBeatNodes = useMemo(() => {
+    if (activeBeats.length === 0) return [];
+    const currentIndex = Math.max(0, Math.min(beatIndex, activeBeats.length - 1));
+    const currentGroupId = activeBeats[currentIndex].groupId;
+    let start = currentIndex;
+
+    while (start > 0 && activeBeats[start - 1].groupId === currentGroupId) {
+      start -= 1;
+    }
+
+    return activeBeats.slice(start, currentIndex + 1);
+  }, [activeBeats, beatIndex]);
 
   useEffect(() => {
     try {
@@ -618,7 +658,11 @@ export function DailyLogsContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           >
-            {activeBeats[beatIndex] ?? null}
+            <div className="space-y-3">
+              {visibleBeatNodes.map((beat) => (
+                <div key={beat.key}>{beat.node}</div>
+              ))}
+            </div>
           </motion.div>
         </AnimatePresence>
       </div>
