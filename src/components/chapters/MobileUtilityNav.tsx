@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { config } from "@fortawesome/fontawesome-svg-core";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
   faBars,
   faBookOpen,
@@ -17,13 +18,20 @@ import { GOFUNDME_SAVE_RICO_URL } from "@/lib/support";
 
 config.autoAddCss = false;
 
-const navItems = [
+type NavItem = {
+  href: string;
+  label: string;
+  icon: IconDefinition;
+  external?: boolean;
+};
+
+const navItems: readonly NavItem[] = [
   { href: "/rainbow-gallery", label: "Rainbow wall", icon: faImage },
   { href: GOFUNDME_SAVE_RICO_URL, label: "Tip", icon: faDollarSign, external: true },
   { href: "/subscribe", label: "Subscribe", icon: faEnvelope },
   { href: "/faqs", label: "FAQs", icon: faCircleQuestion },
   { href: "/daily-logs", label: "Daily logs", icon: faBookOpen },
-] as const;
+];
 
 export function MobileUtilityNav() {
   const [isCollapsed, setIsCollapsed] = useState(false);
