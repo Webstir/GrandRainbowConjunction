@@ -346,6 +346,19 @@ function flattenText(node: React.ReactNode): string | null {
 }
 
 function splitIntoBeatChunks(text: string): string[] {
+  const isWordChar = (ch: string | undefined): boolean => Boolean(ch && /[A-Za-z0-9]/.test(ch));
+  const isDashSeparatorAt = (source: string, index: number): boolean => {
+    const prev = index > 0 ? source[index - 1] : undefined;
+    const next = index + 1 < source.length ? source[index + 1] : undefined;
+    return !(isWordChar(prev) && isWordChar(next));
+  };
+  const isBreakingSeparatorAt = (source: string, index: number): boolean => {
+    const ch = source[index];
+    if (!ch) return false;
+    if (ch === "-") return isDashSeparatorAt(source, index);
+    return ch === "." || ch === "," || ch === "?" || ch === ":" || ch === "!" || ch === "\"";
+  };
+
   const splitInlinePunctuation = (value: string): string[] => {
     const normalizedValue = value.replace(/\s+/g, " ").trim();
     if (!normalizedValue) return [];
@@ -381,22 +394,21 @@ function splitIntoBeatChunks(text: string): string[] {
         continue;
       }
 
-      if (ch === "-") {
-        localBuffer += "-";
-        while (idx + 1 < normalizedValue.length && normalizedValue[idx + 1] === "-") {
+      if (isBreakingSeparatorAt(normalizedValue, idx)) {
+        let hasDashInRun = false;
+        while (idx < normalizedValue.length && isBreakingSeparatorAt(normalizedValue, idx)) {
+          const breakChar = normalizedValue[idx];
+          if (breakChar === "-") {
+            if (!hasDashInRun) {
+              localBuffer += "-";
+              hasDashInRun = true;
+            }
+          } else {
+            localBuffer += breakChar;
+          }
           idx += 1;
         }
-        pushLocalBuffer();
-        continue;
-      }
-
-      if (ch === "." || ch === "," || ch === "?" || ch === ":" || ch === "!") {
-        localBuffer += ch;
-        pushLocalBuffer();
-        continue;
-      }
-      if (ch === "\"") {
-        localBuffer += ch;
+        idx -= 1;
         pushLocalBuffer();
         continue;
       }
@@ -442,15 +454,6 @@ function splitIntoBeatChunks(text: string): string[] {
       continue;
     }
 
-    if (char === "-") {
-      buffer += "-";
-      while (index + 1 < normalized.length && normalized[index + 1] === "-") {
-        index += 1;
-      }
-      pushBuffer();
-      continue;
-    }
-
     if (char === "[" || char === "(") {
       pushBuffer();
       const closingChar = char === "[" ? "]" : ")";
@@ -478,13 +481,21 @@ function splitIntoBeatChunks(text: string): string[] {
       continue;
     }
 
-    if (char === "." || char === "," || char === "?" || char === ":" || char === "!") {
-      buffer += char;
-      pushBuffer();
-      continue;
-    }
-    if (char === "\"") {
-      buffer += char;
+    if (isBreakingSeparatorAt(normalized, index)) {
+      let hasDashInRun = false;
+      while (index < normalized.length && isBreakingSeparatorAt(normalized, index)) {
+        const breakChar = normalized[index];
+        if (breakChar === "-") {
+          if (!hasDashInRun) {
+            buffer += "-";
+            hasDashInRun = true;
+          }
+        } else {
+          buffer += breakChar;
+        }
+        index += 1;
+      }
+      index -= 1;
       pushBuffer();
       continue;
     }
