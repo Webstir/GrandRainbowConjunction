@@ -72,6 +72,169 @@ export function DailyLogsContent() {
 
       <hr className="my-10 border-(--chapter-muted)" />
 
+      <section className="space-y-4">
+        <p className="lead text-lg text-(--foreground)/95">
+          Today, i went to Compassion Christian Center Henderson Plantation...
+          again...
+        </p>
+        <p>
+          My Obj was to acquire a TENT. SUCCESS. [no handle nor strap on tent
+          bag]
+        </p>
+        <hr className="my-8 border-(--chapter-muted)" />
+        <p>
+          i was the first person in line. Woman at the intake desk was
+          aggravatingly flighty. i asked if she was on caffeine... she said no
+          and i explained my observation. i gave the same explanation to the
+          interviewer woman who was trying to proselytize mi. 🙄 [this one
+          dropped her Holiness Mask as i answered her question about my relación
+          w Christ.]
+        </p>
+        <p>
+          i went into the clothing room, found nada, chatted w Trudy about
+          Family [one of her Sons self-medicates]... and about Christians being
+          FAKE w &quot;How ya doin?&quot; and NOT listening/caring for the honest
+          answer. i gave her my xp as dual diagnosis counselor... oddly, her
+          attention waned, as happens when i walk heavy in Truth 🌟]
+        </p>
+        <p>
+          It started raining before i left, so i stayed under the porch cover; i
+          went back in to ask if they had a cup o&apos; café bc my body energy is
+          Near Zero today, even w two B12 tabs. No coffee, but Janice found mi
+          some non-garbage snacks and a water.
+        </p>
+        <p>
+          The short staffer woman that walked in w her man just after i arrived
+          talked to mi for a sec and then went to the back, returning w a PONCHO
+          😃 Surprise and sweet and needed! i told her she is a sweet and warm
+          spirit. We embraced 🤗 &quot;It&apos;s the Jesus in me...&quot; i
+          replied w a commentary on Seed Of The Divine. 🥑🌱
+        </p>
+        <p>
+          i left, but walked back in to ask about any laundry benefits. i replied
+          to the suggestions from the staffer (Pesky Little Hermanita!) w
+          &quot;Gurl, how am i gonna take the bus to downtown w no gold?? My
+          charm?&quot;... under her breath, she said, &quot;U got alot of
+          it&quot; 😅 [to be sure, there are laundry services downtown.
+          i&apos;m about 20 miles away. i also would never trust any of those
+          &quot;resource providers&quot; with my laundry.]
+        </p>
+        <p>
+          i&apos;m ALLWAYS TOO HEAVY for all of these people and NONE has a clue
+          that i&apos;m a former minister.
+        </p>
+        <p>
+          i went out front to wait out the rain. 3 Chatham County cops walk up
+          behind a staffer, enter bldg. When they came out again, a White druggie
+          skank woman was w them. i was minding my biz, checking weather on phone
+          and felt her SPIRIT LATCH onto mi and she walked over and stood next to
+          mi like &quot;Ah! There u are...sorry I&apos;m late.&quot; GROSS. i
+          immediately stepped into the rain, walked to opposite side of porch.
+          Not one minute later, while the burly cop was starting his
+          questionnaire on her, she straight lined over to mi again [violating my
+          airspace again]. i used my Field Commander Voz- &quot;That&apos;s the
+          last time i&apos;m moving my feet. Don&apos;t violate my space again.&quot;
+          Claro, the cop watched and did nada.
+        </p>
+        <p>
+          i recalled seeing an overhead cover outback at the food loading area,
+          so i went there. The food bag was full of unusable items, so i asked
+          for canned chicken, beef... i got it. And, instead of the same blue
+          carry bag, i got a happy tropical bag.
+        </p>
+        <p>
+          Ray viejo asked if i was former military... &quot;I was wondering if u
+          prefer this lifestyle [homeless] vs being in service.&quot; i got to
+          share my USA is the Bad Guys commentary and refusal to be Portal Of
+          Darkness. He came over to shake my hand, i gave him the forearm grasp,
+          he added his other hand [which says &quot;I really wanna hug u!!!!&quot;
+          😉☺️]
+        </p>
+        <p>
+          It is a unique challenge to be Present, Authentic, and Measured when
+          around these people. i Know they&apos;re all tricked. i also Know they
+          are all accountable for their actions, so ....
+        </p>
+        <p>
+          i did VERY WELL in walking my path which is divergent: The Destitute
+          Homeless Man &amp; The Minister. ⚡️🌟⚡️
+        </p>
+        <p className="text-sm tracking-wide text-(--chapter-muted-fg)">
+          01may26 · Blog post
+        </p>
+      </section>
+
+      <hr className="my-10 border-(--chapter-muted)" />
+
+      <section className="space-y-4">
+        <h2 className="font-display text-2xl text-(--chapter-accent) sm:text-3xl">
+          And Then...
+        </h2>
+        <p>
+          i&apos;m running a load of laundry and sitting at D &amp; M&apos;s
+          dining table. ☺️ DJ D was home and unavailable. M took Jay out for
+          walkies and eventually came to sit at table while i ate beans and rice
+          and a baked potato and salad [D&apos;s oil blend plus sal y vinegar was
+          smackalish 😋] D and i had been having a good convo, enjoying our 1 on
+          1 😊
+        </p>
+        <p>
+          i got to see M&apos;s mind and mood slide from Bienvenidos! to ¿Ya te
+          vas? 😲😲😲 The Grand: D knows that i am Witness to what he has to deal
+          with. His wife&apos;s mind is deteriorated and damaging relaciónes.
+          And i got triggered by her abrupt mood/speech change while in the
+          confined space of the dining nook...!
+        </p>
+        <p>
+          He &amp; i will continue talking, if he chooses. [i believe he said
+          &quot;Don&apos;t worry about taking food to motel--- there&apos;ll be
+          more tomorrow.&quot; INVITATION! (?)] He is obviously open for Healing
+          Ops... ❤️‍🩹❤️‍🩹❤️‍🩹 A ver... 🌈
+        </p>
+        <p className="text-sm tracking-wide text-(--chapter-muted-fg)">
+          26apr26
+        </p>
+      </section>
+
+      <hr className="my-10 border-(--chapter-muted)" />
+
+      <section className="space-y-4">
+        <p>
+          Two druggies rolled into the park on bikes. My energy sensors detected
+          them at the fence while i was half asnooze. i was &quot;hoping&quot;
+          [🙄 hoping is a waste 🙄] that they would not go into the treeline bc
+          my bag is there.
+        </p>
+        <p>
+          *They dismounted at a table and chatted. Then, they walked to the
+          treeline. My attention and pulse rate went higher than expected as i
+          envisioned my RESPONSE to them, should they touch my bag. They bypassed
+          it. As they did, i marked my sightlines and hearing range. They were
+          clearly audible and visible.
+        </p>
+        <p>
+          When they finished their session, they stopped near my bag [reusable
+          large grocery bag, wrapped in black trash bag]. i vocalized a reactive
+          &quot;Chu chuui!&quot;... weakly. i realized they were energetically
+          not interested in it and i stayed silent.
+        </p>
+        <p>
+          They walked out w the woman looking chill and the man looking like an
+          84 yr old Parkinson&apos;s patient, shuffling his slow walk and
+          clenching his shaking fists that were near his belt buckle. AFFECTED.
+        </p>
+        <p>
+          He sat on their table, she stood, they chatted, and then they oozed
+          out of the park. No interaction. [tho i did toss them the Peace
+          fingers*]
+        </p>
+        <p className="text-sm tracking-wide text-(--chapter-muted-fg)">
+          22apr26 · #Homeless #HomelessSecurity
+        </p>
+      </section>
+
+      <hr className="my-10 border-(--chapter-muted)" />
+
       <h2 className="mt-12 font-display text-2xl text-(--chapter-accent) sm:text-3xl">
         RAD STUFF i HAVE DONE WHILE Homeless.
       </h2>
