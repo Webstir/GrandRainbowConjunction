@@ -2,7 +2,6 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  cloneElement,
   isValidElement,
   useEffect,
   useMemo,
@@ -367,7 +366,34 @@ function splitIntoBeatChunks(text: string): string[] {
       }
 
       const ch = normalizedValue[idx];
-      if (ch === "." || ch === "," || ch === "?") {
+      if (ch === "¿") {
+        pushLocalBuffer();
+        let questionChunk = ch;
+        idx += 1;
+        while (idx < normalizedValue.length) {
+          questionChunk += normalizedValue[idx];
+          if (normalizedValue[idx] === "?") break;
+          idx += 1;
+        }
+        localChunks.push(questionChunk.trim());
+        continue;
+      }
+
+      if (ch === "-") {
+        localBuffer += "-";
+        while (idx + 1 < normalizedValue.length && normalizedValue[idx + 1] === "-") {
+          idx += 1;
+        }
+        pushLocalBuffer();
+        continue;
+      }
+
+      if (ch === "." || ch === "," || ch === "?" || ch === ":" || ch === "!") {
+        localBuffer += ch;
+        pushLocalBuffer();
+        continue;
+      }
+      if (ch === "\"") {
         localBuffer += ch;
         pushLocalBuffer();
         continue;
@@ -401,6 +427,28 @@ function splitIntoBeatChunks(text: string): string[] {
     }
 
     const char = normalized[index];
+    if (char === "¿") {
+      pushBuffer();
+      let questionChunk = char;
+      index += 1;
+      while (index < normalized.length) {
+        questionChunk += normalized[index];
+        if (normalized[index] === "?") break;
+        index += 1;
+      }
+      chunks.push(questionChunk.trim());
+      continue;
+    }
+
+    if (char === "-") {
+      buffer += "-";
+      while (index + 1 < normalized.length && normalized[index + 1] === "-") {
+        index += 1;
+      }
+      pushBuffer();
+      continue;
+    }
+
     if (char === "[" || char === "(") {
       pushBuffer();
       const closingChar = char === "[" ? "]" : ")";
@@ -428,7 +476,12 @@ function splitIntoBeatChunks(text: string): string[] {
       continue;
     }
 
-    if (char === "." || char === "," || char === "?") {
+    if (char === "." || char === "," || char === "?" || char === ":" || char === "!") {
+      buffer += char;
+      pushBuffer();
+      continue;
+    }
+    if (char === "\"") {
       buffer += char;
       pushBuffer();
       continue;
