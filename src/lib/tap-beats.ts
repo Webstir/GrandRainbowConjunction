@@ -23,12 +23,23 @@ export function parseWisdomSummaryItems(source: string): string[] | null {
   if (open === -1 || close <= open) return null;
   const inner = t.slice(open + 1, close);
   const out: string[] = [];
-  const re = /"((?:[^"\\]|\\.)*)"/g;
+  // Match double-quoted, single-quoted, or template-literal strings, honoring \\ escapes.
+  const re = /"((?:[^"\\]|\\.)*)"|'((?:[^'\\]|\\.)*)'|`((?:[^`\\]|\\.)*)`/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(inner)) !== null) {
-    out.push(m[1].replace(/\\"/g, '"').replace(/\\n/g, "\n"));
+    const raw = m[1] ?? m[2] ?? m[3] ?? "";
+    out.push(unescapeJsString(raw));
   }
   return out.length ? out : null;
+}
+
+function unescapeJsString(s: string): string {
+  return s.replace(/\\(.)/g, (_, ch: string) => {
+    if (ch === "n") return "\n";
+    if (ch === "t") return "\t";
+    if (ch === "r") return "\r";
+    return ch;
+  });
 }
 
 /** Strong sentence end + next chunk looks like a new thought (not lowercase glue). */
