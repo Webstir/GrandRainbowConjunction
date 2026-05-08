@@ -19,6 +19,12 @@ type DailyLogPost = {
   beats: React.ReactNode[];
 };
 
+type PostTheme = {
+  accent: string;
+  softBackground: string;
+  softBorder: string;
+};
+
 const tiers = [
   { usd: "$7", text: "breakfast combo 🍳🥐" },
   { usd: "$10", text: "footlong hotdog and a cheeseburger 🍔🌭" },
@@ -301,6 +307,14 @@ const posts: DailyLogPost[] = [
   },
 ];
 
+const postThemes: PostTheme[] = [
+  { accent: "#ef4444", softBackground: "rgba(239, 68, 68, 0.12)", softBorder: "rgba(239, 68, 68, 0.45)" },
+  { accent: "#f97316", softBackground: "rgba(249, 115, 22, 0.12)", softBorder: "rgba(249, 115, 22, 0.45)" },
+  { accent: "#eab308", softBackground: "rgba(234, 179, 8, 0.12)", softBorder: "rgba(234, 179, 8, 0.45)" },
+  { accent: "#22c55e", softBackground: "rgba(34, 197, 94, 0.12)", softBorder: "rgba(34, 197, 94, 0.45)" },
+  { accent: "#3b82f6", softBackground: "rgba(59, 130, 246, 0.12)", softBorder: "rgba(59, 130, 246, 0.45)" },
+];
+
 const DAILY_LOG_PROGRESS_KEY = "dailyLogsProgressByPost";
 
 function flattenText(node: React.ReactNode): string | null {
@@ -407,6 +421,11 @@ export function DailyLogsContent() {
     () => posts.find((post) => post.id === selectedPostId) ?? null,
     [selectedPostId]
   );
+  const selectedPostIndex = selectedPost ? posts.findIndex((post) => post.id === selectedPost.id) : -1;
+  const selectedTheme =
+    selectedPostIndex >= 0 ? postThemes[selectedPostIndex % postThemes.length] : postThemes[0];
+  const previousPost = selectedPostIndex > 0 ? posts[selectedPostIndex - 1] : null;
+  const nextPost = selectedPostIndex >= 0 && selectedPostIndex < posts.length - 1 ? posts[selectedPostIndex + 1] : null;
 
   const activeBeats = selectedPostId ? expandedBeatsByPostId[selectedPostId] ?? [] : [];
   const totalBeats = activeBeats.length;
@@ -442,6 +461,13 @@ export function DailyLogsContent() {
   const leavePost = () => {
     setSelectedPostId(null);
     setBeatIndex(0);
+  };
+
+  const openSiblingPost = (direction: "prev" | "next") => {
+    if (selectedPostIndex < 0) return;
+    const targetIndex = direction === "next" ? selectedPostIndex + 1 : selectedPostIndex - 1;
+    if (targetIndex < 0 || targetIndex >= posts.length) return;
+    startPost(posts[targetIndex].id);
   };
 
   const advance = () => {
@@ -498,11 +524,18 @@ export function DailyLogsContent() {
           {posts.map((post, index) => (
             <div
               key={post.id}
-              className="rounded-2xl border border-(--chapter-muted) bg-(--chapter-card)/80 p-4 text-left"
+              className="rounded-2xl border bg-(--chapter-card)/80 p-4 text-left"
+              style={{
+                borderColor: postThemes[index % postThemes.length].softBorder,
+                backgroundColor: postThemes[index % postThemes.length].softBackground,
+              }}
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="font-display text-lg text-(--chapter-accent)">
+                  <p
+                    className="font-display text-lg"
+                    style={{ color: postThemes[index % postThemes.length].accent }}
+                  >
                     {String(index + 1).padStart(2, "0")} · {post.title}
                   </p>
                   <p className="mt-1 text-xs uppercase tracking-wider text-(--chapter-muted-fg)">
@@ -518,7 +551,11 @@ export function DailyLogsContent() {
                 <button
                   type="button"
                   onClick={() => startPost(post.id)}
-                  className="rounded-full border border-(--chapter-accent) px-3 py-1 text-xs uppercase tracking-wider text-(--chapter-accent) transition hover:bg-(--chapter-accent)/10"
+                  className="rounded-full border px-3 py-1 text-xs uppercase tracking-wider transition"
+                  style={{
+                    borderColor: postThemes[index % postThemes.length].accent,
+                    color: postThemes[index % postThemes.length].accent,
+                  }}
                 >
                   Start over
                 </button>
@@ -541,7 +578,10 @@ export function DailyLogsContent() {
   }
 
   return (
-    <article className="prose prose-invert prose-p:leading-relaxed max-w-none font-body text-(--foreground) prose-headings:font-display prose-headings:text-(--chapter-accent) prose-li:marker:text-(--chapter-accent)">
+    <article
+      className="prose prose-invert prose-p:leading-relaxed max-w-none font-body text-(--foreground) prose-headings:font-display prose-li:marker:text-(--chapter-accent)"
+      style={{ ["--chapter-accent" as string]: selectedTheme.accent }}
+    >
       <div className="not-prose mb-6 flex flex-wrap items-center justify-between gap-3">
         <button
           type="button"
@@ -559,15 +599,16 @@ export function DailyLogsContent() {
 
       <div className="not-prose mb-6 mt-4 h-1.5 w-full overflow-hidden rounded-full bg-(--chapter-muted)">
         <div
-          className="h-full rounded-full bg-(--chapter-accent) transition-all duration-200"
-          style={{ width: `${progress}%` }}
+          className="h-full rounded-full transition-all duration-200"
+          style={{ backgroundColor: selectedTheme.accent, width: `${progress}%` }}
         />
       </div>
 
       <div
         role="application"
         aria-label="Tap to continue this daily log"
-        className="min-h-[50vh] cursor-pointer select-none rounded-2xl border border-(--chapter-muted) bg-(--chapter-card)/40 p-5 sm:p-6"
+        className="min-h-[50vh] cursor-pointer select-none rounded-2xl border p-5 sm:p-6"
+        style={{ borderColor: selectedTheme.softBorder, backgroundColor: selectedTheme.softBackground }}
         onClick={advance}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
@@ -598,19 +639,46 @@ export function DailyLogsContent() {
         </button>
         <p className="text-center text-sm text-(--chapter-muted-fg)">
           {beatIndex >= totalBeats - 1
-            ? "End of post. Tap All posts to choose another."
+            ? nextPost
+              ? "End of post. Tap Next post to keep reading."
+              : "End of final post. Use All posts to revisit anything."
             : "Tap/click/space to continue · ← to go back · Swipe up/down on mobile."}
         </p>
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
+            if (beatIndex >= totalBeats - 1) {
+              openSiblingPost("next");
+              return;
+            }
             advance();
           }}
-          disabled={beatIndex >= totalBeats - 1}
-          className="rounded-full border border-(--chapter-accent) px-4 py-1.5 text-sm text-(--chapter-accent) disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={beatIndex >= totalBeats - 1 && !nextPost}
+          className="rounded-full border px-4 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+          style={{ borderColor: selectedTheme.accent, color: selectedTheme.accent }}
         >
-          Next →
+          {beatIndex >= totalBeats - 1 ? (nextPost ? "Next post →" : "End of logs") : "Next →"}
+        </button>
+      </div>
+
+      <div className="not-prose mt-3 flex flex-wrap justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => openSiblingPost("prev")}
+          disabled={!previousPost}
+          className="rounded-full border border-(--chapter-muted) px-3 py-1 text-xs uppercase tracking-wider text-(--chapter-muted-fg) disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Previous post
+        </button>
+        <button
+          type="button"
+          onClick={() => openSiblingPost("next")}
+          disabled={!nextPost}
+          className="rounded-full border px-3 py-1 text-xs uppercase tracking-wider disabled:cursor-not-allowed disabled:opacity-50"
+          style={{ borderColor: selectedTheme.accent, color: selectedTheme.accent }}
+        >
+          Next post
         </button>
       </div>
     </article>
