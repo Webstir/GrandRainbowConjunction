@@ -77,53 +77,91 @@ const posts: DailyLogPost[] = [
     blurb: "Tent secured, weather, cops, boundaries, and grounded presence under pressure.",
     beats: [
       <p key="1" className="lead text-lg text-(--foreground)/95">
-        Today, i went to Compassion Christian Center Henderson Plantation... again...
+        Today, i went to Compassion Christian Center Henderson Plantation...again...
       </p>,
-      <p key="2">My Obj was to acquire a TENT. SUCCESS. [no handle nor strap on tent bag]</p>,
-      <p key="3">
-        i was the first person in line. Woman at the intake desk was aggravatingly flighty. i asked
-        if she was on caffeine... she said no and i explained my observation.
+      <p key="2">
+        My Obj was to acquire a TENT.
+        <br />
+        SUCCESS. [no handle nor strap on tent bag]
       </p>,
-      <p key="4">
-        i went into the clothing room, found nada, chatted w Trudy about Family [one of her Sons
-        self-medicates]... and about Christians being FAKE w &quot;How ya doin?&quot; and NOT
-        listening/caring for the honest answer.
-      </p>,
+      <p key="3">_____</p>,
+      <p key="4">i was the first person in line.</p>,
       <p key="5">
-        It started raining before i left, so i stayed under the porch cover; i went back in to ask
-        if they had a cup o&apos; café bc my body energy is Near Zero today, even w two B12 tabs.
+        Woman at the intake desk was aggravatingly flighty. i asked if she was on caffeine... she
+        said no and i explained my observation.
       </p>,
       <p key="6">
-        The short staffer woman that walked in w her man just after i arrived talked to mi for a sec
-        and then went to the back, returning w a PONCHO 😃 Surprise and sweet and needed!
+        i gave the same explanation to the interviewer woman who was trying to proselytize mi.🙄
+        [this one dropped her Holiness Mask as i answered her question about my relación w Christ.]
       </p>,
       <p key="7">
-        i left, but walked back in to ask about any laundry benefits. i replied to the suggestions
-        from the staffer w &quot;Gurl, how am i gonna take the bus to downtown w no gold??&quot;
+        i went into the clothing room, found nada, chatted w Trudy about Family [one of her Sons
+        self-medicates]... and about Christians being FAKE w &quot;How ya doin?&quot; and NOT
+        listening/caring for the honest answer. i gave her my xp as dual diagnosis counselor...oddly,
+        her attention waned, as happens when i walk heavy in Truth🌟]
       </p>,
       <p key="8">
+        It started raining before i left, so i stayed under the porch cover; i went back in to ask
+        if they had a cup o&apos; café bc my body energy is Near Zero today, even w two B12 tabs. No
+        coffee, but Janice found mi some non-garbage snacks and a water.
+      </p>,
+      <p key="9">
+        The short staffer woman that walked in w her man just after i arrived talked to mi for a sec
+        and then went to the back, returning w a PONCHO😃 Surprise and sweet and needed! i told her
+        she is a sweet and warm spirit. We embraced🤗 &quot;It&apos;s the Jesus in me...&quot; i replied
+        w a commentary on Seed Of The Divine.🥑🌱
+      </p>,
+      <p key="10">
+        i left, but walked back in to ask about any laundry benefits. i replied to the suggestions
+        from the staffer (Pesky Little Hermanita!) w &quot;Gurl, how am i gonna take the bus to
+        downtown w no gold?? My charm?&quot;... under her breath, she said, &quot;U got alot of
+        it&quot;😅
+      </p>,
+      <p key="11">
+        [to be sure, there are laundry services downtown. i&apos;m about 20 miles away. i also would
+        never trust any of those &quot;resource providers&quot; with my laundry.]
+      </p>,
+      <p key="12">
         i&apos;m ALLWAYS TOO HEAVY for all of these people and NONE has a clue that i&apos;m a former
         minister.
       </p>,
-      <p key="9">
+      <p key="13">
         i went out front to wait out the rain. 3 Chatham County cops walk up behind a staffer, enter
-        bldg... one woman kept violating my space, and i held my boundary.
+        bldg.
       </p>,
-      <p key="10">
-        i recalled seeing an overhead cover outback at the food loading area. The food bag was full
-        of unusable items, so i asked for canned chicken, beef... i got it.
+      <p key="14">
+        When they came out again, a White druggie skank woman was w them. i was minding my biz,
+        checking weather on phone and felt her SPIRIT LATCH onto mi and she walked over and stood next
+        to mi like &quot;Ah! There u are...sorry I&apos;m late.&quot; GROSS. i immediately stepped into
+        the rain, walked to opposite side of porch. Not one minute later, while the burly cop was
+        starting his questionnaire on her, she straight lined over to mi again [violating my airspace
+        again]. i used my Field Commander Voz- &quot;That&apos;s the last time i&apos;m moving my feet.
+        Don&apos;t violate my space again.&quot; Claro, the cop watched and did nada.
       </p>,
-      <p key="11">
-        Ray viejo asked if i was former military and i shared my refusal to be Portal Of Darkness. He
-        came over to shake my hand and we had a real moment.
+      <p key="15">i recalled seeing an overhead cover outback at the food loading area, so i went there.</p>,
+      <p key="16">
+        The food bag was full of unusable items, so i asked for canned chicken, beef... i got it. And,
+        instead of the same blue carry bag, i got a happy tropical bag.
       </p>,
-      <p key="12">
+      <p key="17">
+        Ray viejo asked if i was former military...&quot;I was wondering if u prefer this lifestyle
+        [homeless] vs being in service.&quot; i got to share my USA is the Bad Guys commentary and
+        refusal to be Portal Of Darkness.
+      </p>,
+      <p key="18">
+        He came over to shake my hand, i gave him the forearm grasp, he added his other hand [which
+        says &quot;I really wanna hug u!!!!&quot; 😉☺️]
+      </p>,
+      <p key="19">
         It is a unique challenge to be Present, Authentic, and Measured when around these people.
       </p>,
-      <p key="13">
+      <p key="20">i Know they&apos;re all tricked.</p>,
+      <p key="21">i also Know they are all accountable for their actions, so ....</p>,
+      <p key="22">
         i did VERY WELL in walking my path which is divergent: The Destitute Homeless Man &amp; The
-        Minister. ⚡️🌟⚡️
+        Minister.⚡️🌟⚡️
       </p>,
+      <p key="23">01may26</p>,
     ],
   },
   {
@@ -136,16 +174,34 @@ const posts: DailyLogPost[] = [
         i&apos;m running a load of laundry and sitting at D &amp; M&apos;s dining table. ☺️
       </p>,
       <p key="2">
-        i got to see M&apos;s mind and mood slide from Bienvenidos! to ¿Ya te vas? 😲😲😲
+        DJ D was home and unavailable.
       </p>,
       <p key="3">
-        D knows that i am Witness to what he has to deal with. His wife&apos;s mind is deteriorated
-        and damaging relaciónes.
+        M took Jay out for walkies and eventually came to sit at table while i ate beans and rice
+        and a baked potato and salad [D&apos;s oil blend plus sal y vinegar was smackalish 😋]
       </p>,
       <p key="4">
-        He &amp; i will continue talking, if he chooses. He is obviously open for Healing Ops...
-        ❤️‍🩹❤️‍🩹❤️‍🩹 A ver... 🌈
+        D and i had been having a good convo, enjoying our 1 on 1 😊
       </p>,
+      <p key="5">
+        i got to see M&apos;s mind and mood slide from Bienvenidos! to ¿Ya te vas? 😲😲😲
+      </p>,
+      <p key="6">
+        The Grand: D knows that i am Witness to what he has to deal with. His wife&apos;s mind is
+        deteriorated and damaging relaciónes. And i got triggered by her abrupt mood/speech change
+        while in the confined space of the dining nook...!
+      </p>,
+      <p key="7">
+        He &amp; i will continue talking, if he chooses to.
+      </p>,
+      <p key="8">
+        [i believe he said &quot;Don&apos;t worry about taking food to motel--- there&apos;ll be more
+        tomorrow.&quot; INVITATION! (?)]
+      </p>,
+      <p key="9">
+        He is obviously open for Healing Ops... ❤️‍🩹❤️‍🩹❤️‍🩹
+      </p>,
+      <p key="10">A ver... 🌈</p>,
     ],
   },
   {
@@ -159,20 +215,41 @@ const posts: DailyLogPost[] = [
         while i was half asnooze.
       </p>,
       <p key="2">
-        They dismounted at a table and chatted. Then, they walked to the treeline. My pulse rate went
-        higher than expected as i envisioned my RESPONSE, should they touch my bag.
+        i was &quot;hoping&quot; [🙄hoping is a waste🙄] that they would not go into the treeline bc
+        my bag is there.
       </p>,
-      <p key="3">
-        When they finished their session, they stopped near my bag. i vocalized a reactive
-        &quot;Chu chuui!&quot;... weakly.
-      </p>,
-      <p key="4">
-        They walked out w the woman looking chill and the man looking like an 84 yr old Parkinson&apos;s
-        patient. AFFECTED.
-      </p>,
+      <p key="3">*They dismounted at a table and chatted.</p>,
+      <p key="4">Then, they walked to the treeline.</p>,
       <p key="5">
-        No interaction. [tho i did toss them the Peace fingers*] #Homeless #HomelessSecurity
+        My attention and pulse rate went higher than expected as i envisioned my RESPONSE to them,
+        should they touch my bag.
       </p>,
+      <p key="6">They bypassed it.</p>,
+      <p key="7">
+        As they did, i marked my sightlines and hearing range. They were clearly audible and visible.
+      </p>,
+      <p key="8">
+        When they finished their session, they stopped near my bag [reusable large grocery bag, wrapped
+        in black trash bag].
+      </p>,
+      <p key="9">i vocalized a reactive &quot;Chu chuui!&quot;...weakly.</p>,
+      <p key="10">
+        i realized they were energetically not interested in it and i stayed silent.
+      </p>,
+      <p key="11">
+        They walked out w the woman looking chill and the man looking like an 84 yr old
+        Parkinson&apos;s patient, shuffling his slow walk and clenching his shaking fists that were near
+        his belt buckle.
+      </p>,
+      <p key="12">AFFECTED.</p>,
+      <p key="13">
+        He sat on their table, she stood, they chatted, and then they oozed out of the park.
+      </p>,
+      <p key="14">No interaction.</p>,
+      <p key="15">[tho i did toss them the Peace fingers*]</p>,
+      <p key="16">22apr26</p>,
+      <p key="17">#Homeless</p>,
+      <p key="18">#HomelessSecurity</p>,
     ],
   },
   {
