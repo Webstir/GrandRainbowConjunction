@@ -317,8 +317,9 @@ function flattenText(node: React.ReactNode): string | null {
     return parts.join("");
   }
   if (isValidElement(node)) {
+    const element = node as React.ReactElement<{ children?: React.ReactNode }>;
     if (node.type === "br") return " ";
-    return flattenText(node.props.children);
+    return flattenText(element.props.children);
   }
   return null;
 }
@@ -367,7 +368,8 @@ function expandBeatsToSentenceGranularity(beats: React.ReactNode[]): React.React
       continue;
     }
 
-    const flattened = flattenText(beat.props.children);
+    const paragraph = beat as React.ReactElement<{ children?: React.ReactNode }>;
+    const flattened = flattenText(paragraph.props.children);
     if (flattened === null) {
       expanded.push(beat);
       continue;
