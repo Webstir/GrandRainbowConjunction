@@ -61,17 +61,15 @@ const posts: DailyLogPost[] = [
         Eating Well is a challenge while homeless.
       </p>,
       <p key="intro-2">There IS a per/day breakdown of how to use gold that i have found:</p>,
-      <div key="tiers" className="not-prose my-6 space-y-2">
-        {tiers.map((row) => (
-          <div
-            key={row.usd}
-            className="flex flex-col gap-1 rounded-xl border border-(--chapter-muted) bg-(--chapter-card)/80 px-4 py-3 sm:flex-row sm:items-baseline sm:gap-4"
-          >
-            <span className="shrink-0 font-pixel text-sm text-(--chapter-accent)">{row.usd}</span>
-            <span className="text-[0.95rem] leading-snug text-(--foreground)/95">= {row.text}</span>
-          </div>
-        ))}
-      </div>,
+      ...tiers.map((row) => (
+        <div
+          key={`tier-${row.usd}`}
+          className="not-prose my-2 flex flex-col gap-1 rounded-xl border border-(--chapter-muted) bg-(--chapter-card)/80 px-4 py-3 sm:flex-row sm:items-baseline sm:gap-4"
+        >
+          <span className="shrink-0 font-pixel text-sm text-(--chapter-accent)">{row.usd}</span>
+          <span className="text-[0.95rem] leading-snug text-(--foreground)/95">= {row.text}</span>
+        </div>
+      )),
       <p key="intro-3">
         My Stewardship allows mi to have a Loaves &amp; Fishes XP very regularly: even w the low 💰,
         i&apos;m able to choose how and where i spend the energy and my Order Of Operations tends to
@@ -308,11 +306,11 @@ const posts: DailyLogPost[] = [
 ];
 
 const postThemes: PostTheme[] = [
-  { accent: "#ef4444", softBackground: "rgba(239, 68, 68, 0.12)", softBorder: "rgba(239, 68, 68, 0.45)" },
-  { accent: "#f97316", softBackground: "rgba(249, 115, 22, 0.12)", softBorder: "rgba(249, 115, 22, 0.45)" },
-  { accent: "#eab308", softBackground: "rgba(234, 179, 8, 0.12)", softBorder: "rgba(234, 179, 8, 0.45)" },
-  { accent: "#22c55e", softBackground: "rgba(34, 197, 94, 0.12)", softBorder: "rgba(34, 197, 94, 0.45)" },
-  { accent: "#3b82f6", softBackground: "rgba(59, 130, 246, 0.12)", softBorder: "rgba(59, 130, 246, 0.45)" },
+  { accent: "#c9837f", softBackground: "rgba(201, 131, 127, 0.1)", softBorder: "rgba(201, 131, 127, 0.36)" },
+  { accent: "#c79267", softBackground: "rgba(199, 146, 103, 0.1)", softBorder: "rgba(199, 146, 103, 0.36)" },
+  { accent: "#b7a261", softBackground: "rgba(183, 162, 97, 0.1)", softBorder: "rgba(183, 162, 97, 0.34)" },
+  { accent: "#78a082", softBackground: "rgba(120, 160, 130, 0.1)", softBorder: "rgba(120, 160, 130, 0.34)" },
+  { accent: "#7696b7", softBackground: "rgba(118, 150, 183, 0.1)", softBorder: "rgba(118, 150, 183, 0.34)" },
 ];
 
 const DAILY_LOG_PROGRESS_KEY = "dailyLogsProgressByPost";
@@ -361,8 +359,8 @@ function splitIntoBeatChunks(text: string): string[] {
 
     const char = normalized[index];
     if (char === "." || char === "," || char === "[" || char === "]" || char === "(" || char === ")") {
+      buffer += char;
       pushBuffer();
-      chunks.push(char);
       continue;
     }
 
