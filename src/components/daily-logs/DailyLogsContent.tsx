@@ -2,6 +2,8 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Children,
+  createElement,
   isValidElement,
   useEffect,
   useMemo,
@@ -504,6 +506,35 @@ function expandBeatsToSentenceGranularity(beats: React.ReactNode[]): BeatChunk[]
     const tierGroup = baseKey.startsWith("tier-") ? "stewardship-tiers" : baseKey;
 
     if (!isValidElement(beat) || beat.type !== "p") {
+      if (isValidElement(beat) && (beat.type === "ul" || beat.type === "ol")) {
+        const listElement = beat as React.ReactElement<{
+          children?: React.ReactNode;
+          className?: string;
+        }>;
+        const listItems = Children.toArray(listElement.props.children).filter(
+          (child): child is React.ReactElement<{ children?: React.ReactNode }> =>
+            isValidElement(child) && child.type === "li"
+        );
+
+        if (listItems.length > 1) {
+          for (let itemIndex = 0; itemIndex < listItems.length; itemIndex += 1) {
+            const item = listItems[itemIndex];
+            const listNode = createElement(
+              listElement.type,
+              { className: listElement.props.className },
+              item
+            );
+            expanded.push({
+              node: listNode,
+              groupId: tierGroup,
+              key: `${baseKey}-li${itemIndex}`,
+              inline: false,
+            });
+          }
+          continue;
+        }
+      }
+
       expanded.push({ node: beat, groupId: tierGroup, key: baseKey, inline: false });
       continue;
     }
