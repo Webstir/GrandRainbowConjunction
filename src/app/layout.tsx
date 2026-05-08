@@ -25,6 +25,11 @@ export const metadata: Metadata = {
     default: "The Grand Rainbow Conjunction",
     template: "%s · The Grand Rainbow Conjunction",
   },
+  icons: {
+    icon: [{ url: "/icon?v=3", type: "image/png" }],
+    shortcut: [{ url: "/icon?v=3", type: "image/png" }],
+    apple: [{ url: "/apple-icon?v=3", type: "image/png" }],
+  },
   description:
     "The Grand Rainbow Conjunction — a medicine path through Hollywood, music production, long-haul miles, and life after the darkest frame.",
   openGraph: {
