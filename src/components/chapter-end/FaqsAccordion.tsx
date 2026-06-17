@@ -55,6 +55,12 @@ const FAQS: FaqItem[] = [
         the bathroom/toilet was always so dirty, i requested cleaning supplies
         along w my bed linens each day. ¡Yuk! 🤢
       </>,
+      <>
+        <em className="block text-violet-200/85">
+          *One of the repeat &quot;preachers&quot; wore a t shirt w
+          &quot;H.N.I.C.&quot; emblazoned on the chest. 😶
+        </em>
+      </>,
     ],
   },
   {
@@ -154,10 +160,6 @@ export function FaqsAccordion() {
             </details>
           ))}
         </div>
-        <p className="mt-8 border-t border-violet-500/30 pt-5 text-base italic leading-relaxed text-violet-200/85 sm:text-lg">
-          *One of the repeat &quot;preachers&quot; wore a t shirt w
-          &quot;H.N.I.C.&quot; emblazoned on the chest. 😶
-        </p>
         <p className="mt-4 text-center text-2xl" aria-hidden>
           🌈
         </p>

@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 import {
   Children,
   createElement,
@@ -14,11 +15,14 @@ import {
 
 type DailyLogPost = {
   id: string;
+  section: string;
   title: string;
   date: string;
   blurb: string;
   beats: React.ReactNode[];
 };
+
+const dailyLogSections = ["Beyond Suicidal", "Homelessness"] as const;
 
 type PostTheme = {
   accent: string;
@@ -61,7 +65,206 @@ const tiers = [
 
 const posts: DailyLogPost[] = [
   {
+    id: "beyond-suicidal",
+    section: "Beyond Suicidal",
+    title: "Beyond Suicidal",
+    date: "17jun26",
+    blurb: "Pre-production, promise, refusal, and survival when every other option is vile.",
+    beats: [
+      <h2 key="h2" className="mt-2 font-display text-2xl text-(--chapter-accent) sm:text-3xl">
+        💔❤️‍🔥Beyond Suicidal❤️‍🩹💝
+      </h2>,
+      <p key="1">
+        There is a lot of space/time/pre production that goes into suicide. No one wakes up in their
+        healthy life and ends it on a whim.
+      </p>,
+      <p key="2">
+        i was first suicidal when my Mother and Younger Sister were assassinated. My Mom was the main
+        motivation or influence for most of my life decisions and we had developed a sweet,
+        respectfull, Adult to Adult relationship by the time i was in college at Berklee.
+      </p>,
+      <p key="3">
+        My LittleSister and i had just Healed and reConnected our relationship after almost 10 yrs of
+        distance.❤️‍🩹💓💞
+      </p>,
+      <p key="4">
+        While i was sat on a couch the day after the event... fixated and borderline catatonic on how
+        to escape the suffering...my Little Girl toddled over to mi, put her tiny hand on my left
+        knee... and i Promised mySelf that i&apos;d Lîve until she was raised-well and out of the
+        nest.
+      </p>,
+      <p key="5">
+        Long after she graduated, my material/professional life was still dismal and wrought w
+        violations.
+      </p>,
+      <p key="6">
+        One of my Arrivals Of Understanding: in order to make big gold 💰💰💰and have financial
+        security, one must hurt Children and do crime. [in the Evil Empire of The White Man].
+      </p>,
+      <p key="7" className="italic text-(--foreground)/90">
+        *We&apos;ll dive into deets about The Empire and How To Detach another time🤿❤️‍🩹❤️‍🔥💖*
+      </p>,
+      <p key="8">
+        &quot;If hurting Children is the only way left for mi to make money to survive, i Refuse.
+        Before i become a portal of Darkness on this realm, i&apos;ll kill my Avatar.&quot;
+      </p>,
+      <p key="9">This is what i said to mi.</p>,
+      <p key="10">Well, i committed to it. 💔💔💔</p>,
+      <p key="11">i failed.</p>,
+      <p key="12">
+        i&apos;d told my Progeny that i would *NOT* make a mess and would simply walk into the woods
+        if i missed my Exit.
+      </p>,
+      <p key="13">
+        Beyond Suicidal: i do not want to die nor kill myself, but will do so if all other options
+        for Basic Survival are vile.
+      </p>,
+      <p key="14">🌈</p>,
+    ],
+  },
+  {
+    id: "beyond-suicidal-woods-pix",
+    section: "Beyond Suicidal",
+    title: "Woods pix",
+    date: "17jun26",
+    blurb: "Laying on plastic garbage bags in the woods — sleeping by day, awake all night.",
+    beats: [
+      <h2 key="h2" className="mt-2 font-display text-2xl text-(--chapter-accent) sm:text-3xl">
+        💔Beyond Suicidal❤️‍🔥
+      </h2>,
+      <p key="1">
+        Hmmm- instead of bleeding out by my own hands, i&apos;m laying on plastic garbage bags on
+        the floor of the woods, sleeping in the daytime, and awake all night.
+      </p>,
+      <p key="2">Interesting Parallel Reality. 🌈</p>,
+      <figure key="photos" className="not-prose my-4 grid gap-4 sm:grid-cols-2">
+        <Image
+          src="/daily-logs/beyond-suicidal/woods-canopy.png"
+          alt="Looking up through the tree canopy from the forest floor"
+          width={900}
+          height={1200}
+          className="w-full rounded-xl border border-(--chapter-muted) object-cover"
+        />
+        <Image
+          src="/daily-logs/beyond-suicidal/woods-selfie.png"
+          alt="Lying on black plastic garbage bags among fallen leaves in the woods"
+          width={900}
+          height={1200}
+          className="w-full rounded-xl border border-(--chapter-muted) object-cover"
+        />
+      </figure>,
+    ],
+  },
+  {
+    id: "09may26-day-log",
+    section: "Homelessness",
+    title: "Riding the Rain",
+    date: "09may26",
+    blurb: "Rainy day under the poncho, G&apos;s moto soliloquy, Lucky&apos;s night, and offering help from the heart.",
+    beats: [
+      <p key="1">06:43 i wake up on the black plastic bags i draped over the mattress cover. i slept undisturbed👍🏽👍🏽 Not quality sleep, tho, so i laid down for another bit.</p>,
+      <p key="2">09:30 i got up, put on boots, peeked thru the kitchen window. Now that it&apos;s day, i can see the full property. So much potential! i killed a line of ants when i opened the back door. Those r the only bugs in here [plus, ONE dead roach grande].</p>,
+      <p key="3">i had a chill and brief wake n bake outback, planned my timeline for the day. G said i could stay til 11:00.</p>,
+      <p key="4">i was gonna organize some packages, but my toilet time took longer than planned. [irregular eating sked, random foods, unreliable water supply and dehydration all affect the Waste Management &amp; Scheduling🤓]</p>,
+      <p key="5">i left the bathroom cleaner than i found it😁</p>,
+      <p key="6">i cleared the space, took trash, locked the door.</p>,
+      <p key="7">As i walked to the park, i saw G finishing the yard from yday, waved.</p>,
+      <p key="8">Today is a rainy day. Here, in the sub tropics, that means ALL DAY wetness, pooling water, etc.</p>,
+      <p key="9">i have no other safe place to be, so... the clothing bag and sneakers bag r going in the 2 now-damaged black plastic bags and into the woods. i put a little clear plastic bag on the bottom and top of backpack and set it under my seat. Bath supply bag goes next to that.</p>,
+      <p key="10">i toss the poncho over mi, adjust it at length to be sure it covers bench and bags, and i ride the rain.</p>,
+      <p key="11">_____</p>,
+      <p key="12">~15:00</p>,
+      <p key="13">i hear an obnoxious moto engine🙄 It&apos;s still drizzling. i see a biker go up the street on a chopper and wonder if it&apos;s G. It is😊</p>,
+      <p key="14">He turned around, entered park, revving the throttle.</p>,
+      <p key="15">&quot;U betta than this, why u out here like?...&quot;</p>,
+      <p key="16">🤔🤔🤔🤔🤨</p>,
+      <p key="17">i definitely know it is extremely irresponsible to drive moto in the rain on drugs. That man was Triple Pickled.</p>,
+      <p key="18">i asked if he was referring to mi being outside, sitting in the rain, not getting a motel room... no response.</p>,
+      <p key="19">i was SO in my GranDaddie Rainbow energies...zero flappability, zero disturbance... By the time he finished talking, he&apos;d come around to &quot;ur solid, Rainbow, ur good.&quot;</p>,
+      <p key="20">...he revved and rolled away while still talking.</p>,
+      <p key="21">This was really a soliloquy. i will ask him later about what he was wanting to express.</p>,
+      <p key="22">i spent about 11 mins, making sure i wasn&apos;t upset about that interaction. i wasn&apos;t.</p>,
+      <p key="23">________</p>,
+      <p key="24">~19:39 Time to be ready to be social at Lucky&apos;s. i had a mental dilemma in leaving my clothing bag in the woods and even walked the park to find another tuck away. None better. i talked thru WHY my chosen spot is the best option:</p>,
+      <p key="25">◦ inside the treeline- only druggies go in there to do drugs</p>,
+      <p key="26">◦ in a black plastic bag- strew some leaves on there and the camo is decent</p>,
+      <p key="27">◦ it&apos;s dusk- no one will be searching for a black garbage bag off the main path in the woods at night</p>,
+      <p key="28">Any other spot is in view of traffic and closer to pedestrian traffic, including near Lucky&apos;s.</p>,
+      <p key="29">Again, i walk away, knowing that i may lose 100% of my items, but cannot carry that bag for my current activity.</p>,
+      <p key="30">______</p>,
+      <p key="31">~20:20 i walk around the motel. As i had spoken it, i saw Ram. i stopped and said hey. He was just sparking that Flower gift from the day before. i invited him to come chat at Lucky&apos;s.</p>,
+      <p key="32">i go sit at the far table on the patio. Not 7 minutes pass, and here comes G, walking. i was wondering how our interaction was gonna be after him revving up in the park. i knew he could likely forget it. We never mentioned it. He invited mi over to his table, introduced mi to a few people. i got him rolled up. He then asked for a pinch for a patróna there [she was off-put by him, as he was sloppy drinky].</p>,
+      <p key="33">i spent most of my time chatting/listening to Frank. It was SWEET how Frank eventually balanced the Energy Exchange: he was DEEP into telling mi about the shitty shit w his adult Children and realized i was doing all that Listening and Advising w no drink! 😃 He got mi a PBR w limon.😎🎁</p>,
+      <p key="34">Interestingly, we didn&apos;t chat anymore after he returned w the bevis. He was into his phone.</p>,
+      <p key="35">After a few songs on the radio [i got the bar to switch OFF the HipHop and play better vibes!!!😁], Frank left.</p>,
+      <p key="36">i sat long enuff to fade into dreaming, still hearing the Music.</p>,
+      <p key="37">Then the vibe changed... one patron came out to talk on phone and i could tell the other person was a woman and he was weary w her. He went back in.</p>,
+      <p key="38">i sat for a few, thinking i wanted to see G before i leave...and where am i rushing to ANYWAY?! 😅</p>,
+      <p key="39">Bueno, i decided it was time to go and the vibe was altered and i wasn&apos;t enjoying the staff [DJ Gordito came out after mi &quot;Zoe doesn&apos;t want ur bags in the chair... not in the chair&quot; ...🤨...way too rude for our history.]</p>,
+      <p key="40">i&apos;m lifting off my seat to put on bags and G comes flying outta the door like a western saloon scene! BACKWARD.</p>,
+      <p key="41">&quot;¡Get outta my bar!&quot;</p>,
+      <p key="42">He rolled on his back, got his bearings, stood up talking; he opened the door again and was dancing/gyrating like a way drunk gay gun slinger.😂</p>,
+      <p key="43">&quot;Sir, ¡get off my property!&quot; said DJ Gordito from inside.</p>,
+      <p key="44">i initially was gonna make sure he was ok, but he got up TALKING so i left him to whatever his mouth had gotten him into.</p>,
+      <p key="45">i walked away while he was dancing in the doorway.🤣</p>,
+      <p key="46">[it&apos;s NOT a funny event, but i see the humor in most things these days. #Perspective]</p>,
+      <p key="47">i&apos;m sure he didn&apos;t see mi bc he was stumbling drunk 43 mins before.</p>,
+      <p key="48">On the walk to recover my clothing bag, i ran a security drill: keep eyes up and avoid him at all cost.</p>,
+      <p key="49">There&apos;s only one street to get my bag and he lives on it...i went thru all the considerations and then had a perfect trip. i didn&apos;t see nor hear him at all.</p>,
+      <p key="50">He is obviously very hurt and damaged. 💔💔💔💔❤️‍🔥</p>,
+      <p key="51">i kept it a good time anoche; i can see potential SEC concerns w him and look fwd to talking about everything.</p>,
+      <p key="52">...only prob w talking about stuff later: he&apos;s gonna be drunk then, too! 🙃</p>,
+      <p key="53">____</p>,
+      <p key="54">i offered to Exchange work for use of the apt [it is 2 units, 3BR; he said it&apos;s an Air BnB...but it ain&apos;t makin not no type of income in its current condition! i can Help.😎 [i&apos;m also studying Immersive Southern US English...😜]]</p>,
+      <p key="55">_____</p>,
+      <p key="56">He has told mi several times - &quot;I gotta stop this drinkin...😣&quot;</p>,
+      <p key="57">i would LUV to be able to Help him. He&apos;s precisely who i&apos;m intent to Assist. ❤️‍🩹❤️‍🔥💝</p>,
+    ],
+  },
+  {
+    id: "08may26-day-log",
+    section: "Homelessness",
+    title: "Element and the Rainbow",
+    date: "08may26",
+    blurb: "Element and Lady, the Rainbow pickup, pizza and fireside convos, sleep in a locked space.",
+    beats: [
+      <p key="1">05:37 Rolled up, almost packed, almost ready to walk for supplies and then go to park.</p>,
+      <p key="2">My mind is focused on how best to lay on the bench. i have to stretch out my body. i don&apos;t have any need for recovery from Wed&apos;s cleanout, rather, from sitting on the benches all day and night.</p>,
+      <p key="3">i knew i had 3 paper monies left. i decided to count the coins. i have 9💰. That is a significant difference that allows mi to plan drink/supplies for now AND a piece of food for later.👍🏽</p>,
+      <p key="4">The overnight weather was comfy, about 65*. The garbage dump/port air has been heavy tho... yuk.</p>,
+      <p key="5">___</p>,
+      <p key="6">06:47</p>,
+      <p key="7">i&apos;m sat on the park bench w a wake n bake w Dr Pepper, i see a man on bike w trailer. i wave, no response. i start thinking of how we choose to not talk to certain people... He rolled up. His name is Element. His chill pup in trailer is Lady.</p>,
+      <p key="8">We greeted Grand Rising, good vibe. He said &quot;I see u have The Spliff... can I please take 2 pulls?&quot;</p>,
+      <p key="9">i packed him a short Black n Mild FT😎</p>,
+      <p key="10">The Herb hit him and he started rapping like listening to Doug Jackson [Jazz Trumpeter] talk and give a sermon.😆😁</p>,
+      <p key="11">He faded away while talking. [Odd #2]</p>,
+      <p key="12">Odd #1 He didn&apos;t hit the treeline to piss- he just walked a meter away and watered the leaves. Not a &quot;bad&quot; thing, but noteworthy.</p>,
+      <p key="13">_____</p>,
+      <p key="14">~15:00 And Then... &quot;😃RAINBOW!!&quot; from across the street... That turned into mi driving for an appliance pick up, having pizza and 🍻, and enjoying fireside convos in the rain.🥰</p>,
+      <p key="15">And now, i&apos;m going to sleep in a -bug free, door locked, no one here but mi- space.🥰</p>,
+      <p key="16">💝Much Appreciated.</p>,
+      <p key="17">[💦Shower #2 after Sunrise!! Woo!]🌈</p>,
+    ],
+  },
+  {
+    id: "03may26-and-then",
+    section: "Homelessness",
+    title: "Nude Truth",
+    date: "03may26",
+    blurb: "Park bench on Sunny Sunday, new biz relaci&oacute;n, trust from the Nude Truth of Our WORD.",
+    beats: [
+      <p key="1">i&apos;m sat on the park bench. it&apos;s a Sunny Sunday after super rain Sat. Once again [still again], i don&apos;t know if i&apos;m sleeping under a roof tmw night or staying awake all night.</p>,
+      <p key="2">The Difference of today: i now have a new biz relaci&oacute;n and he made the First Steps in Trust.</p>,
+      <p key="3">It is RAD to Know we r both working thru broken Trust issues and we get to start from the Nude Truth of Our WORD.</p>,
+      <p key="4">i&apos;m here for this.</p>,
+      <p key="5">03may26</p>,
+      <p key="6">🌈</p>,
+    ],
+  },
+  {
     id: "02may26-stewardship",
+    section: "Homelessness",
     title: "Stewardship and eating well",
     date: "02may26",
     blurb: "Daily food budgeting while homeless, and the protocols that keep me strong.",
@@ -93,6 +296,7 @@ const posts: DailyLogPost[] = [
   },
   {
     id: "01may26-compassion-center",
+    section: "Homelessness",
     title: "Compassion Center field log",
     date: "01may26",
     blurb: "Tent secured, weather, cops, boundaries, and grounded presence under pressure.",
@@ -186,7 +390,24 @@ const posts: DailyLogPost[] = [
     ],
   },
   {
+    id: "28apr26-and-then",
+    section: "Homelessness",
+    title: "Living Free",
+    date: "28apr26",
+    blurb: "Petrol at the park, Exxon tanker driver, James and the Living Free Biker Church invitation.",
+    beats: [
+      <p key="1">And Then...</p>,
+      <p key="2">i smelled petrol at the park, walked to Exxon and saw a tanker and Driver, sitting w arms folded while unloading.</p>,
+      <p key="3">He was on his feet when i doubled back.😄</p>,
+      <p key="4">James was working, but chatted w mi at length, inviting mi to his Living Free Biker Church.</p>,
+      <p key="5">[he told mi he has big gold, &quot;I&apos;m at the Top of the Food Chain&quot;, but i did not ask him for material Help bc i STILL do not walk around, scanning People&apos;s Pockets!😗]</p>,
+      <p key="6">i would like to go to meet his church...a ver...</p>,
+      <p key="7">28apr26</p>,
+    ],
+  },
+  {
     id: "26apr26-and-then",
+    section: "Homelessness",
     title: "And Then...",
     date: "26apr26",
     blurb: "An intimate home moment, relational shifts, and healing signals.",
@@ -227,6 +448,7 @@ const posts: DailyLogPost[] = [
   },
   {
     id: "22apr26-park-security",
+    section: "Homelessness",
     title: "Park security watch",
     date: "22apr26",
     blurb: "Threat detection, situational awareness, and choosing calibrated response.",
@@ -275,6 +497,7 @@ const posts: DailyLogPost[] = [
   },
   {
     id: "11aug25-rad-stuff",
+    section: "Homelessness",
     title: "Rad stuff while homeless",
     date: "11aug25",
     blurb: "A living record of service, artistry, and practical impact across cities.",
@@ -608,6 +831,19 @@ export function DailyLogsContent() {
   const previousPost = selectedPostIndex > 0 ? posts[selectedPostIndex - 1] : null;
   const nextPost = selectedPostIndex >= 0 && selectedPostIndex < posts.length - 1 ? posts[selectedPostIndex + 1] : null;
 
+  const postsBySection = useMemo(
+    () =>
+      dailyLogSections.map((section) => ({
+        section,
+        posts: posts.filter((post) => post.section === section),
+      })),
+    []
+  );
+  const globalPostIndexById = useMemo(
+    () => Object.fromEntries(posts.map((post, index) => [post.id, index] as const)),
+    []
+  );
+
   const activeBeats = selectedPostId ? expandedBeatsByPostId[selectedPostId] ?? [] : [];
   const totalBeats = activeBeats.length;
   const progress = totalBeats > 0 ? Math.round(((beatIndex + 1) / totalBeats) * 100) : 0;
@@ -713,8 +949,14 @@ export function DailyLogsContent() {
           Pick a post to begin a tap-essay reading flow.
         </p>
 
-        <div className="not-prose mt-8 grid gap-3">
-          {posts.map((post, index) => (
+        <div className="not-prose mt-8 space-y-10">
+          {postsBySection.map(({ section, posts: sectionPosts }) => (
+            <div key={section}>
+              <h2 className="font-display text-2xl text-(--chapter-accent) sm:text-3xl">{section}</h2>
+              <div className="mt-4 grid gap-3">
+                {sectionPosts.map((post) => {
+                  const index = globalPostIndexById[post.id] ?? 0;
+                  return (
             <div
               key={post.id}
               className="rounded-2xl border bg-(--chapter-card)/80 p-4 text-left"
@@ -762,6 +1004,10 @@ export function DailyLogsContent() {
                     Resume beat {savedProgress[post.id] + 1}
                   </button>
                 )}
+              </div>
+            </div>
+                  );
+                })}
               </div>
             </div>
           ))}
