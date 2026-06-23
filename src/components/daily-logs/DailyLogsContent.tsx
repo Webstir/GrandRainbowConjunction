@@ -137,7 +137,7 @@ const posts: DailyLogPost[] = [
         the floor of the woods, sleeping in the daytime, and awake all night.
       </p>,
       <p key="2">Interesting Parallel Reality. 🌈</p>,
-      <figure key="photos" className="not-prose my-4 grid gap-4 sm:grid-cols-2">
+      <figure key="photos" className="not-prose my-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Image
           src="/daily-logs/beyond-suicidal/woods-canopy.png"
           alt="Looking up through the tree canopy from the forest floor"
@@ -148,6 +148,13 @@ const posts: DailyLogPost[] = [
         <Image
           src="/daily-logs/beyond-suicidal/woods-selfie.png"
           alt="Lying on black plastic garbage bags among fallen leaves in the woods"
+          width={900}
+          height={1200}
+          className="w-full rounded-xl border border-(--chapter-muted) object-cover"
+        />
+        <Image
+          src="/daily-logs/beyond-suicidal/woods-rest.png"
+          alt="Resting on a black tarp in the woods with tie-dye headband and turquoise sunglasses"
           width={900}
           height={1200}
           className="w-full rounded-xl border border-(--chapter-muted) object-cover"
@@ -575,10 +582,24 @@ function splitIntoBeatChunks(text: string): string[] {
     const next = index + 1 < source.length ? source[index + 1] : undefined;
     return !(isWordChar(prev) && isWordChar(next));
   };
+  const isClockTimeColonAt = (source: string, index: number): boolean => {
+    if (source[index] !== ":") return false;
+    let digitStart = index - 1;
+    while (digitStart >= 0 && /\d/.test(source[digitStart])) {
+      digitStart -= 1;
+    }
+    const hourPart = source.slice(digitStart + 1, index);
+    if (!/^\d{1,2}$/.test(hourPart)) return false;
+    const minutes = source.slice(index + 1, index + 3);
+    if (!/^\d{2}/.test(minutes)) return false;
+    const afterMinutes = source[index + 3];
+    return !(afterMinutes && /\d/.test(afterMinutes));
+  };
   const isBreakingSeparatorAt = (source: string, index: number): boolean => {
     const ch = source[index];
     if (!ch) return false;
     if (ch === "-") return isDashSeparatorAt(source, index);
+    if (ch === ":" && isClockTimeColonAt(source, index)) return false;
     return (
       ch === "." ||
       ch === "," ||
